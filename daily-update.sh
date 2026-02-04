@@ -44,6 +44,10 @@ Pick 1-3 stocks with:
 Update index.html with your picks (1-3 tickers). The file uses a simple ASCII table format.
 Keep the HTML minimal - just update the table data and timestamp.
 
+IMPORTANT: Each bull case point MUST be a hyperlink to its source article.
+Format: <a href="SOURCE_URL">Bull case text</a>
+Use the actual URLs from your research (Yahoo Finance, TipRanks, Investing.com, etc.)
+
 ## After Updates
 Run these commands:
 ```
@@ -57,6 +61,7 @@ git push
 - Each must have 50%+ realistic upside to analyst targets
 - Be aggressive - this is an alpha-seeking portfolio
 - Include specific price targets and catalyst dates
+- Bull cases MUST include source URLs as hyperlinks
 - Current date: use today'"'"'s date
 
 Begin your research now.'
