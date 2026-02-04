@@ -434,7 +434,7 @@
 
         // Current recommendations data - UPDATE THIS DAILY (or use JSON file)
         const currentData = {
-            timestamp: "2026-02-03T21:30:00Z",
+            timestamp: "2026-02-03T23:45:00Z",
             recommendations: [
                 // AI Infrastructure
                 {
@@ -442,41 +442,62 @@
                     name: "Nvidia Corporation",
                     category: "AI Infrastructure",
                     recommendation: "BUY",
-                    allocation: 14,
+                    allocation: 12,
                     conviction: 8,
-                    priceTarget: "$253-352",
+                    priceTarget: "$255-352",
                     currentPrice: "$179.30",
-                    upside: "41-96%",
+                    upside: "42-96%",
                     wsbMentions: "high",
                     wsbSentiment: "bullish",
                     wsbTrending: true,
-                    wsbNote: "Perennial WSB favorite; frequent DD posts on AI demand",
+                    wsbNote: "63% positive sentiment; 113 mentions in 24hrs; perennial WSB favorite",
                     risks: [
-                        "China export restrictions ($9B revenue at risk)",
-                        "Hyperscaler custom silicon competition (TPUs, Trainium)",
-                        "Stock 15% below ATH; needs Vera Rubin execution"
+                        "China export restrictions ($4.5B charge taken; $50B market at risk)",
+                        "Competition from AMD MI450 and custom silicon (TPUs, Trainium)",
+                        "15% below ATH; needs Vera Rubin execution"
                     ],
-                    justification: "80%+ AI GPU market share; Vera Rubin launch H2 2026 with 5x inference perf; PEG 0.73; 39 Buy ratings"
+                    justification: "80%+ AI GPU share; Vera Rubin in production 2 quarters early; PEG 0.72; $500B revenue visibility; 38 Buy ratings"
                 },
                 {
                     ticker: "AVGO",
                     name: "Broadcom Inc",
                     category: "AI Infrastructure",
                     recommendation: "BUY",
-                    allocation: 11,
+                    allocation: 10,
                     conviction: 7,
-                    priceTarget: "$423-475",
-                    currentPrice: "$310",
-                    upside: "37-53%",
+                    priceTarget: "$457-525",
+                    currentPrice: "$317",
+                    upside: "44-66%",
                     wsbMentions: "medium",
                     wsbSentiment: "bullish",
                     wsbTrending: false,
                     risks: [
-                        "VMware customer backlash (100%+ price hikes)",
-                        "Customer concentration (Google, Meta, ByteDance, OpenAI)",
-                        "Stock down 25% from ATH; volatile"
+                        "VMware customer exodus (36% already switching)",
+                        "Customer concentration (Google, Meta, ByteDance, OpenAI, Anthropic)",
+                        "24% below ATH; volatile post-earnings"
                     ],
-                    justification: "$73B AI backlog; AI revenue +150% YoY to $50B in FY26; 60% ASIC market share; 34x forward P/E"
+                    justification: "$73B AI backlog; AI revenue +100% YoY to $40B+ in FY26; 60-70% ASIC market share; 46 Buy ratings"
+                },
+                {
+                    ticker: "TSM",
+                    name: "Taiwan Semiconductor",
+                    category: "AI Infrastructure",
+                    recommendation: "BUY",
+                    allocation: 8,
+                    conviction: 8,
+                    priceTarget: "$392-450",
+                    currentPrice: "$332",
+                    upside: "18-35%",
+                    wsbMentions: "medium",
+                    wsbSentiment: "bullish",
+                    wsbTrending: false,
+                    wsbNote: "Strategic infrastructure play; 78% positive Reddit sentiment",
+                    risks: [
+                        "Geopolitical Taiwan/China risk (60% capacity in Taiwan)",
+                        "Customer concentration (Apple, Nvidia top customers)",
+                        "Overseas fab execution challenges vs Taiwan efficiency"
+                    ],
+                    justification: "90%+ advanced node market share; 30% FY26 revenue growth; 2nm in HVM; $52-56B capex; forward P/E 19-26x"
                 },
                 {
                     ticker: "MRVL",
@@ -488,15 +509,15 @@
                     priceTarget: "$110-150",
                     currentPrice: "$74",
                     upside: "49-103%",
-                    wsbMentions: "medium",
-                    wsbSentiment: "bullish",
+                    wsbMentions: "low",
+                    wsbSentiment: "mixed",
                     wsbTrending: false,
                     risks: [
-                        "Customer concentration (AWS, Microsoft)",
-                        "Unconfirmed reports of Trainium 3/4 losses to Alchip",
+                        "70%+ revenue tied to AWS/Microsoft (concentration risk)",
+                        "Unconfirmed Trainium 3/4 losses to Alchip speculation",
                         "Still GAAP unprofitable; high beta (1.97)"
                     ],
-                    justification: "39% below 52-week high; PEG 0.76; 5-year AWS deal secured; AI revenue doubling to $2.5B+"
+                    justification: "39% below 52-week high; PEG 0.12-0.79; 5-year AWS deal secured; AI >50% of data center revenue"
                 },
                 {
                     ticker: "ALAB",
@@ -505,18 +526,18 @@
                     recommendation: "BUY",
                     allocation: 5,
                     conviction: 7,
-                    priceTarget: "$187-275",
+                    priceTarget: "$191-275",
                     currentPrice: "$157",
-                    upside: "19-75%",
+                    upside: "22-75%",
                     wsbMentions: "low",
                     wsbSentiment: "bullish",
                     wsbTrending: false,
                     risks: [
-                        "Premium valuation (35-42x P/S vs 5.6x industry)",
+                        "Premium valuation (28x P/S vs 5.6x industry)",
                         "Competition from Broadcom, Marvell intensifying",
                         "Earnings Feb 10 - binary event risk"
                     ],
-                    justification: "Morgan Stanley top small-cap pick; 104% revenue growth; Scorpio fabric switches launching Q1-Q2 2026"
+                    justification: "Only PCIe Gen 6 provider; Scorpio fabric switches in production; 104% revenue growth; $20B TAM by 2030"
                 },
                 // Big Tech AI
                 {
@@ -524,61 +545,63 @@
                     name: "Meta Platforms",
                     category: "Big Tech AI",
                     recommendation: "BUY",
-                    allocation: 11,
+                    allocation: 10,
                     conviction: 7,
-                    priceTarget: "$822-859",
+                    priceTarget: "$822-920",
                     currentPrice: "$706",
-                    upside: "16-22%",
+                    upside: "16-30%",
                     wsbMentions: "high",
                     wsbSentiment: "bullish",
                     wsbTrending: true,
-                    wsbNote: "Strong retail support post-earnings beat",
+                    wsbNote: "Strong retail support post-Q4 earnings beat; top trending on WSB",
                     risks: [
                         "$115-135B capex in 2026 (nearly doubled from 2025)",
-                        "Reality Labs losing $24B/year; margin compression to 41%",
+                        "Reality Labs losing ~$24B/year; margin compression to 41%",
                         "EU regulatory fines; youth safety litigation"
                     ],
-                    justification: "Q4 beat +24% YoY; Advantage+ at $60B run rate; cheapest Mag-7 at 22x forward P/E; 81 Buy ratings"
+                    justification: "Q4 beat +24% YoY; Advantage+ at $60B run rate; cheapest Mag-7 at 22x forward P/E; 41 Buy ratings"
+                },
+                {
+                    ticker: "GOOGL",
+                    name: "Alphabet Inc",
+                    category: "Big Tech AI",
+                    recommendation: "BUY",
+                    allocation: 8,
+                    conviction: 7,
+                    priceTarget: "$370-385",
+                    currentPrice: "$339",
+                    upside: "9-14%",
+                    wsbMentions: "high",
+                    wsbSentiment: "bullish",
+                    wsbTrending: true,
+                    wsbNote: "WSB #4 pick for 2026; best-performing Mag-7 YTD; J.P. Morgan top pick",
+                    risks: [
+                        "DOJ antitrust appeal (Feb 3 filed); potential remedies",
+                        "AI competition from OpenAI/Microsoft intensifying",
+                        "17% above historical P/E average"
+                    ],
+                    justification: "Gemini 3 leading benchmarks; Cloud +40% growth potential; $155B backlog; forward P/E 27x; Q4 earnings Feb 4"
                 },
                 {
                     ticker: "AMZN",
                     name: "Amazon.com",
                     category: "Big Tech AI",
                     recommendation: "BUY",
-                    allocation: 9,
+                    allocation: 7,
                     conviction: 7,
-                    priceTarget: "$285-305",
+                    priceTarget: "$295-340",
                     currentPrice: "$238",
-                    upside: "20-28%",
-                    wsbMentions: "medium",
+                    upside: "24-43%",
+                    wsbMentions: "high",
                     wsbSentiment: "bullish",
                     wsbTrending: false,
+                    wsbNote: "WSB #1 pick for 2026; 76/100 sentiment score",
                     risks: [
-                        "AWS losing share to Azure (29% vs Azure catching up)",
-                        "$125B+ capex with uncertain AI ROI",
-                        "Capacity constraints limiting near-term revenue"
+                        "AWS share loss to Azure (29% vs Azure catching up)",
+                        "$150B+ capex in 2026 with uncertain AI ROI",
+                        "Q4 earnings Feb 5 - AWS margin pressure"
                     ],
-                    justification: "AWS reaccelerating at 20.2%; Trainium3 ramping early 2026; $200B backlog; Bedrock multi-billion run rate"
-                },
-                {
-                    ticker: "MSFT",
-                    name: "Microsoft Corporation",
-                    category: "Big Tech AI",
-                    recommendation: "BUY",
-                    allocation: 8,
-                    conviction: 7,
-                    priceTarget: "$575-629",
-                    currentPrice: "$426",
-                    upside: "35-48%",
-                    wsbMentions: "medium",
-                    wsbSentiment: "mixed",
-                    wsbTrending: false,
-                    risks: [
-                        "Azure decelerating (40% to 37-38%)",
-                        "OpenAI concentration (45% of $625B backlog)",
-                        "$37.5B quarterly capex - record high"
-                    ],
-                    justification: "22% below ATH post-selloff; 15M Copilot seats (+160% YoY); $392B commercial RPO; 34 Buy ratings"
+                    justification: "AWS reaccelerating at 20%+; Trainium3 ramping; $200B backlog; Anthropic partnership could add $6B revenue"
                 },
                 // Cybersecurity
                 {
@@ -587,20 +610,20 @@
                     category: "Cybersecurity",
                     recommendation: "BUY",
                     allocation: 5,
-                    conviction: 5,
-                    priceTarget: "$551-580",
+                    conviction: 6,
+                    priceTarget: "$551-640",
                     currentPrice: "$420",
-                    upside: "31-38%",
+                    upside: "31-52%",
                     wsbMentions: "low",
                     wsbSentiment: "mixed",
                     wsbTrending: false,
-                    wsbNote: "Still recovering sentiment post-outage incident",
+                    wsbNote: "Sentiment recovering post-July 2024 outage; 97% customer retention",
                     risks: [
-                        "Valuation still premium at 25-28x sales",
+                        "Valuation premium at 25-28x sales",
                         "Growth decelerating from 31% to 20-22%",
-                        "Delta lawsuit and class actions pending"
+                        "Delta lawsuit pending ($500M+ claim)"
                     ],
-                    justification: "Net new ARR +73% YoY; Charlotte AI agentic SOC capabilities; 97% retention post-outage; 20% off highs"
+                    justification: "Net new ARR +73% YoY (record); Charlotte AI agentic SOC; 97% retention post-outage; 35 Buy ratings"
                 },
                 {
                     ticker: "PANW",
@@ -609,18 +632,19 @@
                     recommendation: "BUY",
                     allocation: 5,
                     conviction: 6,
-                    priceTarget: "$226-250",
+                    priceTarget: "$227-265",
                     currentPrice: "$175",
-                    upside: "29-43%",
-                    wsbMentions: "low",
-                    wsbSentiment: "none",
+                    upside: "30-51%",
+                    wsbMentions: "medium",
+                    wsbSentiment: "bullish",
                     wsbTrending: false,
+                    wsbNote: "94/100 sentiment score despite low mentions",
                     risks: [
-                        "$25B CyberArk deal adds $15B debt",
-                        "13.5% shareholder dilution from deal",
-                        "Growth decelerated to 14-16%"
+                        "$25B CyberArk deal adds debt and dilution",
+                        "109x trailing P/E is extreme premium",
+                        "Integration execution risk"
                     ],
-                    justification: "XSIAM ARR +200% YoY; IBM QRadar migration deadline Apr 2026; 21% below 52-week high; half of CRWD valuation"
+                    justification: "XSIAM $1B+ bookings (fastest ever); IBM QRadar migration deadline Apr 2026; 21% below 52-week high"
                 },
                 {
                     ticker: "ZS",
@@ -629,18 +653,19 @@
                     recommendation: "BUY",
                     allocation: 6,
                     conviction: 7,
-                    priceTarget: "$317-325",
+                    priceTarget: "$319-390",
                     currentPrice: "$201",
-                    upside: "58-62%",
+                    upside: "59-94%",
                     wsbMentions: "low",
-                    wsbSentiment: "none",
+                    wsbSentiment: "bearish",
                     wsbTrending: false,
+                    wsbNote: "Contrarian indicator - retail bearish while institutions bullish",
                     risks: [
                         "Premium valuation (75-91x forward P/E)",
                         "Competition from CRWD and PANW platformization",
                         "Still GAAP unprofitable"
                     ],
-                    justification: "Leading zero trust pure-play; RPO +35% YoY (accelerating); AI Security ARR hit $400M early; 40% below 52-week high"
+                    justification: "Leading zero trust pure-play; RPO +35% YoY (accelerating); AI Security ARR $400M+; 40% below 52-week high"
                 },
                 {
                     ticker: "DDOG",
@@ -649,18 +674,18 @@
                     recommendation: "BUY",
                     allocation: 5,
                     conviction: 6,
-                    priceTarget: "$185-225",
-                    currentPrice: "$129",
-                    upside: "43-74%",
+                    priceTarget: "$175-225",
+                    currentPrice: "$130",
+                    upside: "35-73%",
                     wsbMentions: "low",
-                    wsbSentiment: "bullish",
+                    wsbSentiment: "mixed",
                     wsbTrending: false,
                     risks: [
-                        "OpenAI customer concentration ($170M ARR at risk)",
-                        "Premium valuation (13x P/S, 56x forward P/E)",
-                        "Earnings Feb 10 could disappoint"
+                        "OpenAI customer concentration ($170M+ ARR at risk)",
+                        "Premium valuation (14x P/S, 56x forward P/E)",
+                        "Earnings Feb 10 - guidance risk"
                     ],
-                    justification: "Best-in-class AI observability; Bits AI ranked #1 by Forrester; 36% below 52-week high; 50%+ upside to targets"
+                    justification: "Best-in-class AI observability; Bits AI SRE agent; Rule of 40 score 78; 35% below 52-week high"
                 },
                 // AI Energy
                 {
@@ -670,26 +695,26 @@
                     recommendation: "BUY",
                     allocation: 7,
                     conviction: 7,
-                    priceTarget: "$235-293",
-                    currentPrice: "$156",
-                    upside: "51-88%",
+                    priceTarget: "$237-293",
+                    currentPrice: "$158",
+                    upside: "50-85%",
                     wsbMentions: "medium",
                     wsbSentiment: "bullish",
                     wsbTrending: true,
-                    wsbNote: "Nuclear/data center energy play gaining traction",
+                    wsbNote: "Nuclear/data center energy play trending; Meta deal catalyst",
                     risks: [
                         "FERC regulatory risk on behind-the-meter deals",
-                        "Stock down 29% from 52-week high",
-                        "High leverage (3.36x D/E)"
+                        "29% below 52-week high; high volatility",
+                        "High leverage (3.36x D/E); Altman Z-Score 1.8"
                     ],
-                    justification: "20-year Meta deal for 2,609MW nuclear; largest competitive fleet (41GW); 96% hedged for 2026; 10 Buy ratings"
+                    justification: "20-year Meta deal for 2,609MW nuclear; 41GW competitive fleet; 96% hedged for 2026; unanimous Buy ratings"
                 },
                 {
                     ticker: "TLN",
                     name: "Talen Energy",
                     category: "AI Energy",
                     recommendation: "BUY",
-                    allocation: 5,
+                    allocation: 4,
                     conviction: 6,
                     priceTarget: "$455-576",
                     currentPrice: "$331",
@@ -699,30 +724,31 @@
                     wsbTrending: false,
                     risks: [
                         "High valuation (75x+ trailing P/E)",
-                        "Susquehanna outage narrowed 2025 guidance",
-                        "AWS concentration risk"
+                        "Spring 2026 Susquehanna outage during AWS transition",
+                        "AWS concentration risk; $3.45B gas acquisition adds debt"
                     ],
-                    justification: "$18B AWS deal through 2042; unanimous Strong Buy; front-of-meter structure de-risks FERC issues"
+                    justification: "$18B AWS deal through 2042; front-of-meter structure de-risks FERC; PEG 0.52; 14 Buy ratings"
                 },
                 {
                     ticker: "VRT",
                     name: "Vertiv Holdings",
                     category: "AI Energy",
                     recommendation: "BUY",
-                    allocation: 4,
-                    conviction: 7,
-                    priceTarget: "$190-230",
-                    currentPrice: "$189",
-                    upside: "1-22%",
+                    allocation: 3,
+                    conviction: 6,
+                    priceTarget: "$208-225",
+                    currentPrice: "$190",
+                    upside: "9-18%",
                     wsbMentions: "low",
                     wsbSentiment: "bullish",
                     wsbTrending: false,
+                    wsbNote: "70/100 neutral sentiment; not a WSB play",
                     risks: [
-                        "Trading at all-time highs (limited near-term upside)",
-                        "Valuation stretched at 65x trailing P/E",
+                        "Trading near all-time highs (limited near-term upside)",
+                        "65x trailing P/E is stretched valuation",
                         "Dependent on hyperscaler capex cycle"
                     ],
-                    justification: "$9.5B backlog; 60% order growth YoY; NVIDIA partnership on GB200 liquid cooling; potential S&P 500 inclusion"
+                    justification: "$9.5B backlog; 60% order growth YoY; NVIDIA GB200 liquid cooling partnership; earnings Feb 11"
                 },
                 // NO BUY Recommendations
                 {
@@ -732,19 +758,61 @@
                     recommendation: "NO BUY",
                     allocation: 0,
                     conviction: 6,
-                    priceTarget: "$346-400",
+                    priceTarget: "$320-400",
                     currentPrice: "$437",
-                    upside: "-9% to -21%",
+                    upside: "-8% to -27%",
+                    wsbMentions: "high",
+                    wsbSentiment: "bullish",
+                    wsbTrending: true,
+                    wsbNote: "Extremely bullish retail sentiment; viral YOLO success stories; retail often late to memory cycles",
+                    risks: [
+                        "Trading 18-37% ABOVE analyst targets",
+                        "Up 247% in 12 months - priced for perfection",
+                        "$20B capex signals potential cyclical peak"
+                    ],
+                    justification: "Excellent HBM fundamentals but terrible entry. Q2 guide $18.7B/68% GM is priced in. Wait for $350-400."
+                },
+                {
+                    ticker: "ASML",
+                    name: "ASML Holding",
+                    category: "AI Infrastructure",
+                    recommendation: "NO BUY",
+                    allocation: 0,
+                    conviction: 6,
+                    priceTarget: "$1,475-1,572",
+                    currentPrice: "$1,381",
+                    upside: "7-14%",
                     wsbMentions: "medium",
                     wsbSentiment: "bullish",
-                    wsbTrending: false,
-                    wsbNote: "WSB bullish but retail often late to memory cycles",
+                    wsbTrending: true,
+                    wsbNote: "WSB mentions up 200% recently; 86% positive sentiment; monopoly narrative strong",
                     risks: [
-                        "Trading 18-26% ABOVE analyst targets",
-                        "Up 224% in 12 months - priced for perfection",
-                        "$20B capex signals cyclical peak risk"
+                        "China revenue dropping from 33% to 20% in 2026",
+                        "P/E of 47-56x is 40% above 10-year average",
+                        "Near ATH with limited upside to analyst targets"
                     ],
-                    justification: "Excellent fundamentals but terrible entry. Q2 guide $18.7B/68% GM is priced in. Wait for $350-400."
+                    justification: "Monopoly position excellent but wait for better entry. Record EUR 38.8B backlog priced in. Target $1,100-1,250."
+                },
+                {
+                    ticker: "RKLB",
+                    name: "Rocket Lab USA",
+                    category: "Aerospace",
+                    recommendation: "NO BUY",
+                    allocation: 0,
+                    conviction: 6,
+                    priceTarget: "$69-90",
+                    currentPrice: "$78",
+                    upside: "-12% to +15%",
+                    wsbMentions: "high",
+                    wsbSentiment: "bullish",
+                    wsbTrending: true,
+                    wsbNote: "WSB #2 pick for 2026; space hype play; retail favorite",
+                    risks: [
+                        "Trading ABOVE median analyst target of $69-72",
+                        "Extreme valuation at 90x P/S",
+                        "SpaceX can undercut Neutron pricing; -$220M annual cash burn"
+                    ],
+                    justification: "Excellent company but WSB momentum already priced in after 172%+ rally. Wait for $55-65 or Neutron success."
                 },
                 {
                     ticker: "CCJ",
@@ -759,13 +827,13 @@
                     wsbMentions: "medium",
                     wsbSentiment: "bullish",
                     wsbTrending: false,
-                    wsbNote: "Uranium/nuclear hype; sentiment diverges from valuation",
+                    wsbNote: "Uranium/nuclear hype; retail sentiment diverges from valuation reality",
                     risks: [
                         "Trading ABOVE most analyst targets",
                         "P/E of 117-138x vs peer average 71x",
                         "McArthur River production guidance cut"
                     ],
-                    justification: "Strong long-term thesis but overvalued at $126. Wait for pullback to $90-105. Prefer VST/TLN for nuclear exposure."
+                    justification: "Strong long-term thesis but overvalued. Wait for pullback to $90-105. Prefer VST/TLN for nuclear exposure."
                 },
                 {
                     ticker: "STX",
@@ -776,7 +844,7 @@
                     conviction: 5,
                     priceTarget: "$333-417",
                     currentPrice: "$440",
-                    upside: "-6% to -24%",
+                    upside: "-5% to -24%",
                     wsbMentions: "low",
                     wsbSentiment: "none",
                     wsbTrending: false,
@@ -786,27 +854,6 @@
                         "Cyclical hardware at peak multiples"
                     ],
                     justification: "HAMR technology excellent but stock priced for perfection. Wait for pullback to $330-380."
-                },
-                {
-                    ticker: "ORCL",
-                    name: "Oracle Corporation",
-                    category: "Enterprise Software",
-                    recommendation: "NO BUY",
-                    allocation: 0,
-                    conviction: 7,
-                    priceTarget: "$297-312",
-                    currentPrice: "$160",
-                    upside: "85% but high risk",
-                    wsbMentions: "low",
-                    wsbSentiment: "mixed",
-                    wsbTrending: false,
-                    wsbNote: "Stargate deal hype but balance sheet concerns",
-                    risks: [
-                        "433-500% debt/equity ratio",
-                        "OpenAI $300B deal creates binary outcome",
-                        "Negative FCF projected through 2029"
-                    ],
-                    justification: "Balance sheet too risky. Potential junk credit downgrade. Wait for deleveraging or deal clarity."
                 }
             ]
         };
