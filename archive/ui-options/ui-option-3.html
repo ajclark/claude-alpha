@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Recommendations | Minimal UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #fafafa;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --border-light: #e5e7eb;
+            --border-lighter: #f3f4f6;
+            --accent-green: #10b981;
+            --accent-green-bg: #ecfdf5;
+            --accent-red: #ef4444;
+            --accent-red-bg: #fef2f2;
+            --accent-blue: #3b82f6;
+            --accent-blue-bg: #eff6ff;
+            --accent-yellow: #f59e0b;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Sticky Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-light);
+            padding: 20px 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: var(--accent-blue);
+        }
+
+        .header-metrics {
+            display: flex;
+            gap: 32px;
+        }
+
+        .header-metric {
+            text-align: right;
+        }
+
+        .header-metric-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .header-metric-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-metric-value.positive {
+            color: var(--accent-green);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 32px;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 64px;
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-lighter);
+            transition: all 0.3s ease;
+        }
+
+        .summary-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .summary-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+        }
+
+        .summary-icon.green {
+            background: var(--accent-green-bg);
+        }
+
+        .summary-icon.blue {
+            background: var(--accent-blue-bg);
+        }
+
+        .summary-icon.red {
+            background: var(--accent-red-bg);
+        }
+
+        .summary-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .summary-subtext {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 32px;
+        }
+
+        /* Stock List */
+        .stock-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .stock-row {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-lighter);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stock-row:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .stock-row.expanded {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stock-main {
+            padding: 24px 32px;
+            display: grid;
+            grid-template-columns: 200px 1fr 1fr 1fr 60px;
+            align-items: center;
+            gap: 24px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .stock-main:hover {
+            background: var(--border-lighter);
+        }
+
+        .stock-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stock-ticker {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stock-badge {
+            font-size: 0.625rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stock-badge.buy {
+            background: var(--accent-green-bg);
+            color: var(--accent-green);
+        }
+
+        .stock-badge.no-buy {
+            background: var(--accent-red-bg);
+            color: var(--accent-red);
+        }
+
+        .stock-name {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .stock-category {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* YTD Gains Section */
+        .ytd-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ytd-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ytd-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ytd-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .ytd-value.positive {
+            color: var(--accent-green);
+        }
+
+        .ytd-value.negative {
+            color: var(--accent-red);
+        }
+
+        .eoy-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .eoy-badge {
+            font-size: 0.5rem;
+            padding: 2px 4px;
+            border-radius: 3px;
+            background: var(--accent-blue-bg);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        /* Conviction Bar */
+        .conviction-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .conviction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .conviction-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .conviction-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .conviction-bar {
+            height: 6px;
+            background: var(--border-light);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .conviction-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+
+        .conviction-fill.high {
+            background: var(--accent-green);
+        }
+
+        .conviction-fill.medium {
+            background: var(--accent-yellow);
+        }
+
+        .conviction-fill.low {
+            background: var(--accent-red);
+        }
+
+        /* Allocation Section */
+        .allocation-section {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            text-align: right;
+        }
+
+        .allocation-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .allocation-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .allocation-value.zero {
+            color: var(--text-muted);
+        }
+
+        /* Expand Icon */
+        .expand-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--border-lighter);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .expand-icon svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--text-secondary);
+            transition: transform 0.3s ease;
+        }
+
+        .stock-row.expanded .expand-icon svg {
+            transform: rotate(180deg);
+        }
+
+        /* Expanded Details */
+        .stock-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .stock-row.expanded .stock-details {
+            max-height: 600px;
+        }
+
+        .details-content {
+            padding: 0 32px 32px;
+            border-top: 1px solid var(--border-lighter);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 32px;
+            padding-top: 24px;
+        }
+
+        .detail-block {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .detail-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-lighter);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .detail-value.positive {
+            color: var(--accent-green);
+        }
+
+        /* Risks List */
+        .risks-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .risks-list li {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .risks-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-red);
+        }
+
+        /* Justification */
+        .justification {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            padding: 16px;
+            background: var(--border-lighter);
+            border-radius: var(--radius);
+        }
+
+        /* WSB Badge */
+        .wsb-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.6875rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .wsb-badge.trending {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff4500 100%);
+            color: white;
+        }
+
+        .wsb-badge.bullish {
+            background: var(--accent-green-bg);
+            color: var(--accent-green);
+        }
+
+        .wsb-badge.bearish {
+            background: var(--accent-red-bg);
+            color: var(--accent-red);
+        }
+
+        /* No Buy Section */
+        .no-buy-section {
+            margin-top: 64px;
+        }
+
+        .no-buy-section .section-title {
+            color: var(--text-secondary);
+        }
+
+        .no-buy-section .stock-row {
+            opacity: 0.75;
+        }
+
+        .no-buy-section .stock-row:hover {
+            opacity: 1;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 80px;
+            padding: 32px 0;
+            border-top: 1px solid var(--border-light);
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .footer-disclaimer {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 16px auto 0;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stock-main {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .allocation-section {
+                text-align: left;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-metrics {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 16px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stock-main {
+                padding: 20px;
+            }
+
+            .details-content {
+                padding: 0 20px 24px;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stock-row {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .stock-row:nth-child(2) { animation-delay: 0.05s; }
+        .stock-row:nth-child(3) { animation-delay: 0.1s; }
+        .stock-row:nth-child(4) { animation-delay: 0.15s; }
+        .stock-row:nth-child(5) { animation-delay: 0.2s; }
+        .stock-row:nth-child(6) { animation-delay: 0.25s; }
+        .stock-row:nth-child(7) { animation-delay: 0.3s; }
+        .stock-row:nth-child(8) { animation-delay: 0.35s; }
+    </style>
+</head>
+<body>
+    <!-- Sticky Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Stock<span>AI</span></div>
+            <div class="header-metrics">
+                <div class="header-metric">
+                    <div class="header-metric-label">Portfolio YTD</div>
+                    <div class="header-metric-value positive">+8.4%</div>
+                </div>
+                <div class="header-metric">
+                    <div class="header-metric-label">2026 EOY Target</div>
+                    <div class="header-metric-value positive">+38.2%</div>
+                </div>
+                <div class="header-metric">
+                    <div class="header-metric-label">Last Updated</div>
+                    <div class="header-metric-value">Feb 3, 2026</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Summary Cards -->
+        <section class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-icon green">
+                    <svg width="24" height="24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                </div>
+                <div class="summary-label">Buy Recommendations</div>
+                <div class="summary-value" style="color: var(--accent-green);">14</div>
+                <div class="summary-subtext">Across 4 sectors</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon red">
+                    <svg width="24" height="24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                </div>
+                <div class="summary-label">No Buy Ratings</div>
+                <div class="summary-value" style="color: var(--accent-red);">6</div>
+                <div class="summary-subtext">Overvalued or wait for entry</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon blue">
+                    <svg width="24" height="24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                </div>
+                <div class="summary-label">Avg Conviction</div>
+                <div class="summary-value">6.8<span style="font-size: 1rem; color: var(--text-muted);">/10</span></div>
+                <div class="summary-subtext">High confidence portfolio</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon green">
+                    <svg width="24" height="24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                </div>
+                <div class="summary-label">Top Pick</div>
+                <div class="summary-value">NVDA</div>
+                <div class="summary-subtext">12% allocation</div>
+            </div>
+        </section>
+
+        <!-- Buy Recommendations -->
+        <section>
+            <h2 class="section-title">Buy Recommendations</h2>
+            <p class="section-subtitle">Stocks with positive outlook and recommended allocation</p>
+
+            <div class="stock-list" id="buyList">
+                <!-- Stock rows will be inserted here -->
+            </div>
+        </section>
+
+        <!-- No Buy Section -->
+        <section class="no-buy-section">
+            <h2 class="section-title">Wait for Better Entry</h2>
+            <p class="section-subtitle">Quality stocks currently overvalued - monitor for pullbacks</p>
+
+            <div class="stock-list" id="noBuyList">
+                <!-- No buy stock rows will be inserted here -->
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p class="footer-text">Generated by Claude AI on February 3, 2026</p>
+            <p class="footer-disclaimer">This is not financial advice. All investments carry risk. Past performance does not guarantee future results. Do your own research before making investment decisions.</p>
+        </footer>
+    </main>
+
+    <script>
+        // Stock data with YTD gains
+        const stockData = {
+            recommendations: [
+                {
+                    ticker: "NVDA",
+                    name: "Nvidia Corporation",
+                    category: "AI Infrastructure",
+                    recommendation: "BUY",
+                    allocation: 12,
+                    conviction: 8,
+                    currentPrice: "$179.30",
+                    priceTarget: "$255-352",
+                    upside: "42-96%",
+                    ytdGain: 12,
+                    eoyTarget: 45,
+                    wsbTrending: true,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "China export restrictions ($4.5B charge taken; $50B market at risk)",
+                        "Competition from AMD MI450 and custom silicon (TPUs, Trainium)",
+                        "15% below ATH; needs Vera Rubin execution"
+                    ],
+                    justification: "80%+ AI GPU share; Vera Rubin in production 2 quarters early; PEG 0.72; $500B revenue visibility; 38 Buy ratings"
+                },
+                {
+                    ticker: "AVGO",
+                    name: "Broadcom Inc",
+                    category: "AI Infrastructure",
+                    recommendation: "BUY",
+                    allocation: 10,
+                    conviction: 7,
+                    currentPrice: "$317",
+                    priceTarget: "$457-525",
+                    upside: "44-66%",
+                    ytdGain: 8,
+                    eoyTarget: 35,
+                    wsbTrending: false,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "VMware customer exodus (36% already switching)",
+                        "Customer concentration (Google, Meta, ByteDance, OpenAI, Anthropic)",
+                        "24% below ATH; volatile post-earnings"
+                    ],
+                    justification: "$73B AI backlog; AI revenue +100% YoY to $40B+ in FY26; 60-70% ASIC market share; 46 Buy ratings"
+                },
+                {
+                    ticker: "TSM",
+                    name: "Taiwan Semiconductor",
+                    category: "AI Infrastructure",
+                    recommendation: "BUY",
+                    allocation: 8,
+                    conviction: 8,
+                    currentPrice: "$332",
+                    priceTarget: "$392-450",
+                    upside: "18-35%",
+                    ytdGain: 5,
+                    eoyTarget: 40,
+                    wsbTrending: false,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "Geopolitical Taiwan/China risk (60% capacity in Taiwan)",
+                        "Customer concentration (Apple, Nvidia top customers)",
+                        "Overseas fab execution challenges vs Taiwan efficiency"
+                    ],
+                    justification: "90%+ advanced node market share; 30% FY26 revenue growth; 2nm in HVM; $52-56B capex; forward P/E 19-26x"
+                },
+                {
+                    ticker: "META",
+                    name: "Meta Platforms",
+                    category: "Big Tech AI",
+                    recommendation: "BUY",
+                    allocation: 10,
+                    conviction: 7,
+                    currentPrice: "$706",
+                    priceTarget: "$822-920",
+                    upside: "16-30%",
+                    ytdGain: 11,
+                    eoyTarget: 28,
+                    wsbTrending: true,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "$115-135B capex in 2026 (nearly doubled from 2025)",
+                        "Reality Labs losing ~$24B/year; margin compression to 41%",
+                        "EU regulatory fines; youth safety litigation"
+                    ],
+                    justification: "Q4 beat +24% YoY; Advantage+ at $60B run rate; cheapest Mag-7 at 22x forward P/E; 41 Buy ratings"
+                },
+                {
+                    ticker: "GOOGL",
+                    name: "Alphabet Inc",
+                    category: "Big Tech AI",
+                    recommendation: "BUY",
+                    allocation: 8,
+                    conviction: 7,
+                    currentPrice: "$339",
+                    priceTarget: "$370-385",
+                    upside: "9-14%",
+                    ytdGain: 6,
+                    eoyTarget: 22,
+                    wsbTrending: true,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "DOJ antitrust appeal (Feb 3 filed); potential remedies",
+                        "AI competition from OpenAI/Microsoft intensifying",
+                        "17% above historical P/E average"
+                    ],
+                    justification: "Gemini 3 leading benchmarks; Cloud +40% growth potential; $155B backlog; forward P/E 27x; Q4 earnings Feb 4"
+                },
+                {
+                    ticker: "AMZN",
+                    name: "Amazon.com",
+                    category: "Big Tech AI",
+                    recommendation: "BUY",
+                    allocation: 7,
+                    conviction: 7,
+                    currentPrice: "$238",
+                    priceTarget: "$295-340",
+                    upside: "24-43%",
+                    ytdGain: 4,
+                    eoyTarget: 32,
+                    wsbTrending: false,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "AWS share loss to Azure (29% vs Azure catching up)",
+                        "$150B+ capex in 2026 with uncertain AI ROI",
+                        "Q4 earnings Feb 5 - AWS margin pressure"
+                    ],
+                    justification: "AWS reaccelerating at 20%+; Trainium3 ramping; $200B backlog; Anthropic partnership could add $6B revenue"
+                },
+                {
+                    ticker: "MRVL",
+                    name: "Marvell Technology",
+                    category: "AI Infrastructure",
+                    recommendation: "BUY",
+                    allocation: 5,
+                    conviction: 6,
+                    currentPrice: "$74",
+                    priceTarget: "$110-150",
+                    upside: "49-103%",
+                    ytdGain: -3,
+                    eoyTarget: 55,
+                    wsbTrending: false,
+                    wsbSentiment: "mixed",
+                    risks: [
+                        "70%+ revenue tied to AWS/Microsoft (concentration risk)",
+                        "Unconfirmed Trainium 3/4 losses to Alchip speculation",
+                        "Still GAAP unprofitable; high beta (1.97)"
+                    ],
+                    justification: "39% below 52-week high; PEG 0.12-0.79; 5-year AWS deal secured; AI >50% of data center revenue"
+                },
+                {
+                    ticker: "ALAB",
+                    name: "Astera Labs",
+                    category: "AI Infrastructure",
+                    recommendation: "BUY",
+                    allocation: 5,
+                    conviction: 7,
+                    currentPrice: "$157",
+                    priceTarget: "$191-275",
+                    upside: "22-75%",
+                    ytdGain: 15,
+                    eoyTarget: 50,
+                    wsbTrending: false,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "Premium valuation (28x P/S vs 5.6x industry)",
+                        "Competition from Broadcom, Marvell intensifying",
+                        "Earnings Feb 10 - binary event risk"
+                    ],
+                    justification: "Only PCIe Gen 6 provider; Scorpio fabric switches in production; 104% revenue growth; $20B TAM by 2030"
+                },
+                {
+                    ticker: "VST",
+                    name: "Vistra Corp",
+                    category: "AI Energy",
+                    recommendation: "BUY",
+                    allocation: 7,
+                    conviction: 7,
+                    currentPrice: "$158",
+                    priceTarget: "$237-293",
+                    upside: "50-85%",
+                    ytdGain: 18,
+                    eoyTarget: 65,
+                    wsbTrending: true,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "FERC regulatory risk on behind-the-meter deals",
+                        "29% below 52-week high; high volatility",
+                        "High leverage (3.36x D/E); Altman Z-Score 1.8"
+                    ],
+                    justification: "20-year Meta deal for 2,609MW nuclear; 41GW competitive fleet; 96% hedged for 2026; unanimous Buy ratings"
+                },
+                {
+                    ticker: "TLN",
+                    name: "Talen Energy",
+                    category: "AI Energy",
+                    recommendation: "BUY",
+                    allocation: 4,
+                    conviction: 6,
+                    currentPrice: "$331",
+                    priceTarget: "$455-576",
+                    upside: "37-74%",
+                    ytdGain: 9,
+                    eoyTarget: 48,
+                    wsbTrending: false,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "High valuation (75x+ trailing P/E)",
+                        "Spring 2026 Susquehanna outage during AWS transition",
+                        "AWS concentration risk; $3.45B gas acquisition adds debt"
+                    ],
+                    justification: "$18B AWS deal through 2042; front-of-meter structure de-risks FERC; PEG 0.52; 14 Buy ratings"
+                },
+                {
+                    ticker: "VRT",
+                    name: "Vertiv Holdings",
+                    category: "AI Energy",
+                    recommendation: "BUY",
+                    allocation: 3,
+                    conviction: 6,
+                    currentPrice: "$190",
+                    priceTarget: "$208-225",
+                    upside: "9-18%",
+                    ytdGain: 7,
+                    eoyTarget: 15,
+                    wsbTrending: false,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "Trading near all-time highs (limited near-term upside)",
+                        "65x trailing P/E is stretched valuation",
+                        "Dependent on hyperscaler capex cycle"
+                    ],
+                    justification: "$9.5B backlog; 60% order growth YoY; NVIDIA GB200 liquid cooling partnership; earnings Feb 11"
+                },
+                {
+                    ticker: "CRWD",
+                    name: "CrowdStrike Holdings",
+                    category: "Cybersecurity",
+                    recommendation: "BUY",
+                    allocation: 5,
+                    conviction: 6,
+                    currentPrice: "$420",
+                    priceTarget: "$551-640",
+                    upside: "31-52%",
+                    ytdGain: 2,
+                    eoyTarget: 38,
+                    wsbTrending: false,
+                    wsbSentiment: "mixed",
+                    risks: [
+                        "Valuation premium at 25-28x sales",
+                        "Growth decelerating from 31% to 20-22%",
+                        "Delta lawsuit pending ($500M+ claim)"
+                    ],
+                    justification: "Net new ARR +73% YoY (record); Charlotte AI agentic SOC; 97% retention post-outage; 35 Buy ratings"
+                },
+                {
+                    ticker: "PANW",
+                    name: "Palo Alto Networks",
+                    category: "Cybersecurity",
+                    recommendation: "BUY",
+                    allocation: 5,
+                    conviction: 6,
+                    currentPrice: "$175",
+                    priceTarget: "$227-265",
+                    upside: "30-51%",
+                    ytdGain: -1,
+                    eoyTarget: 35,
+                    wsbTrending: false,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "$25B CyberArk deal adds debt and dilution",
+                        "109x trailing P/E is extreme premium",
+                        "Integration execution risk"
+                    ],
+                    justification: "XSIAM $1B+ bookings (fastest ever); IBM QRadar migration deadline Apr 2026; 21% below 52-week high"
+                },
+                {
+                    ticker: "ZS",
+                    name: "Zscaler",
+                    category: "Cybersecurity",
+                    recommendation: "BUY",
+                    allocation: 6,
+                    conviction: 7,
+                    currentPrice: "$201",
+                    priceTarget: "$319-390",
+                    upside: "59-94%",
+                    ytdGain: -5,
+                    eoyTarget: 60,
+                    wsbTrending: false,
+                    wsbSentiment: "bearish",
+                    risks: [
+                        "Premium valuation (75-91x forward P/E)",
+                        "Competition from CRWD and PANW platformization",
+                        "Still GAAP unprofitable"
+                    ],
+                    justification: "Leading zero trust pure-play; RPO +35% YoY (accelerating); AI Security ARR $400M+; 40% below 52-week high"
+                },
+                {
+                    ticker: "DDOG",
+                    name: "Datadog",
+                    category: "Cybersecurity",
+                    recommendation: "BUY",
+                    allocation: 5,
+                    conviction: 6,
+                    currentPrice: "$130",
+                    priceTarget: "$175-225",
+                    upside: "35-73%",
+                    ytdGain: 3,
+                    eoyTarget: 42,
+                    wsbTrending: false,
+                    wsbSentiment: "mixed",
+                    risks: [
+                        "OpenAI customer concentration ($170M+ ARR at risk)",
+                        "Premium valuation (14x P/S, 56x forward P/E)",
+                        "Earnings Feb 10 - guidance risk"
+                    ],
+                    justification: "Best-in-class AI observability; Bits AI SRE agent; Rule of 40 score 78; 35% below 52-week high"
+                }
+            ],
+            noBuy: [
+                {
+                    ticker: "MU",
+                    name: "Micron Technology",
+                    category: "AI Infrastructure",
+                    recommendation: "NO BUY",
+                    allocation: 0,
+                    conviction: 6,
+                    currentPrice: "$437",
+                    priceTarget: "$320-400",
+                    upside: "-8% to -27%",
+                    ytdGain: 28,
+                    eoyTarget: -15,
+                    wsbTrending: true,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "Trading 18-37% ABOVE analyst targets",
+                        "Up 247% in 12 months - priced for perfection",
+                        "$20B capex signals potential cyclical peak"
+                    ],
+                    justification: "Excellent HBM fundamentals but terrible entry. Q2 guide $18.7B/68% GM is priced in. Wait for $350-400."
+                },
+                {
+                    ticker: "ASML",
+                    name: "ASML Holding",
+                    category: "AI Infrastructure",
+                    recommendation: "NO BUY",
+                    allocation: 0,
+                    conviction: 6,
+                    currentPrice: "$1,381",
+                    priceTarget: "$1,475-1,572",
+                    upside: "7-14%",
+                    ytdGain: 4,
+                    eoyTarget: 10,
+                    wsbTrending: true,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "China revenue dropping from 33% to 20% in 2026",
+                        "P/E of 47-56x is 40% above 10-year average",
+                        "Near ATH with limited upside to analyst targets"
+                    ],
+                    justification: "Monopoly position excellent but wait for better entry. Record EUR 38.8B backlog priced in. Target $1,100-1,250."
+                },
+                {
+                    ticker: "RKLB",
+                    name: "Rocket Lab USA",
+                    category: "Aerospace",
+                    recommendation: "NO BUY",
+                    allocation: 0,
+                    conviction: 6,
+                    currentPrice: "$78",
+                    priceTarget: "$69-90",
+                    upside: "-12% to +15%",
+                    ytdGain: 35,
+                    eoyTarget: -5,
+                    wsbTrending: true,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "Trading ABOVE median analyst target of $69-72",
+                        "Extreme valuation at 90x P/S",
+                        "SpaceX can undercut Neutron pricing; -$220M annual cash burn"
+                    ],
+                    justification: "Excellent company but WSB momentum already priced in after 172%+ rally. Wait for $55-65 or Neutron success."
+                },
+                {
+                    ticker: "CCJ",
+                    name: "Cameco Corporation",
+                    category: "AI Energy",
+                    recommendation: "NO BUY",
+                    allocation: 0,
+                    conviction: 5,
+                    currentPrice: "$126",
+                    priceTarget: "$110-121",
+                    upside: "-4% to -13%",
+                    ytdGain: 12,
+                    eoyTarget: -8,
+                    wsbTrending: false,
+                    wsbSentiment: "bullish",
+                    risks: [
+                        "Trading ABOVE most analyst targets",
+                        "P/E of 117-138x vs peer average 71x",
+                        "McArthur River production guidance cut"
+                    ],
+                    justification: "Strong long-term thesis but overvalued. Wait for pullback to $90-105. Prefer VST/TLN for nuclear exposure."
+                },
+                {
+                    ticker: "STX",
+                    name: "Seagate Technology",
+                    category: "AI Storage",
+                    recommendation: "NO BUY",
+                    allocation: 0,
+                    conviction: 5,
+                    currentPrice: "$440",
+                    priceTarget: "$333-417",
+                    upside: "-5% to -24%",
+                    ytdGain: 22,
+                    eoyTarget: -12,
+                    wsbTrending: false,
+                    wsbSentiment: "none",
+                    risks: [
+                        "Up 600% from 52-week low; trading above targets",
+                        "Capacity fully committed - limited upside surprise",
+                        "Cyclical hardware at peak multiples"
+                    ],
+                    justification: "HAMR technology excellent but stock priced for perfection. Wait for pullback to $330-380."
+                }
+            ]
+        };
+
+        // Render stock row
+        function renderStockRow(stock, isBuy) {
+            const convictionClass = stock.conviction >= 7 ? 'high' : stock.conviction >= 5 ? 'medium' : 'low';
+            const ytdClass = stock.ytdGain >= 0 ? 'positive' : 'negative';
+            const eoyClass = stock.eoyTarget >= 0 ? 'positive' : 'negative';
+
+            return `
+                <div class="stock-row" data-ticker="${stock.ticker}">
+                    <div class="stock-main" onclick="toggleExpand('${stock.ticker}')">
+                        <div class="stock-info">
+                            <div class="stock-ticker">
+                                ${stock.ticker}
+                                <span class="stock-badge ${isBuy ? 'buy' : 'no-buy'}">${stock.recommendation}</span>
+                            </div>
+                            <div class="stock-name">${stock.name}</div>
+                            <div class="stock-category">${stock.category}</div>
+                            ${stock.wsbTrending ? '<span class="wsb-badge trending">WSB Trending</span>' :
+                              stock.wsbSentiment === 'bullish' ? '<span class="wsb-badge bullish">WSB Bullish</span>' :
+                              stock.wsbSentiment === 'bearish' ? '<span class="wsb-badge bearish">WSB Bearish</span>' : ''}
+                        </div>
+
+                        <div class="ytd-section">
+                            <div class="ytd-row">
+                                <span class="ytd-label">YTD Actual</span>
+                                <span class="ytd-value ${ytdClass}">${stock.ytdGain >= 0 ? '+' : ''}${stock.ytdGain}%</span>
+                            </div>
+                            <div class="ytd-row">
+                                <span class="ytd-label eoy-label">
+                                    2026 EOY Target
+                                    <span class="eoy-badge">EST</span>
+                                </span>
+                                <span class="ytd-value ${eoyClass}">${stock.eoyTarget >= 0 ? '+' : ''}${stock.eoyTarget}%</span>
+                            </div>
+                        </div>
+
+                        <div class="conviction-section">
+                            <div class="conviction-header">
+                                <span class="conviction-label">Conviction</span>
+                                <span class="conviction-value">${stock.conviction}/10</span>
+                            </div>
+                            <div class="conviction-bar">
+                                <div class="conviction-fill ${convictionClass}" style="width: ${stock.conviction * 10}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="allocation-section">
+                            <span class="allocation-label">Allocation</span>
+                            <span class="allocation-value ${stock.allocation === 0 ? 'zero' : ''}">${stock.allocation}%</span>
+                        </div>
+
+                        <div class="expand-icon">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="stock-details">
+                        <div class="details-content">
+                            <div class="details-grid">
+                                <div class="detail-block">
+                                    <div class="detail-title">Price Information</div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Current Price</span>
+                                        <span class="detail-value">${stock.currentPrice}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Price Target</span>
+                                        <span class="detail-value">${stock.priceTarget}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Upside Potential</span>
+                                        <span class="detail-value ${stock.upside.includes('-') ? '' : 'positive'}">${stock.upside}</span>
+                                    </div>
+                                </div>
+
+                                <div class="detail-block">
+                                    <div class="detail-title">Key Risks</div>
+                                    <ul class="risks-list">
+                                        ${stock.risks.map(risk => `<li>${risk}</li>`).join('')}
+                                    </ul>
+                                </div>
+
+                                <div class="detail-block">
+                                    <div class="detail-title">Investment Thesis</div>
+                                    <div class="justification">${stock.justification}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Toggle expand
+        function toggleExpand(ticker) {
+            const row = document.querySelector(`[data-ticker="${ticker}"]`);
+            row.classList.toggle('expanded');
+        }
+
+        // Initialize
+        function init() {
+            const buyList = document.getElementById('buyList');
+            const noBuyList = document.getElementById('noBuyList');
+
+            buyList.innerHTML = stockData.recommendations.map(stock => renderStockRow(stock, true)).join('');
+            noBuyList.innerHTML = stockData.noBuy.map(stock => renderStockRow(stock, false)).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Stock Portfolio Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: rgba(22, 22, 35, 0.7);
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #6b6b7b;
+            --accent-green: #00d991;
+            --accent-green-glow: rgba(0, 217, 145, 0.3);
+            --accent-red: #ff4757;
+            --accent-red-glow: rgba(255, 71, 87, 0.3);
+            --accent-blue: #5f9fff;
+            --accent-purple: #a855f7;
+            --accent-orange: #ff9f43;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(168, 85, 247, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(0, 217, 145, 0.05) 0%, transparent 70%),
+                var(--bg-primary);
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #a0a0b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .header .last-updated {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Summary Stats */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-card .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-card.buy .stat-value {
+            color: var(--accent-green);
+        }
+
+        .stat-card.no-buy .stat-value {
+            color: var(--accent-red);
+        }
+
+        .stat-card.conviction .stat-value {
+            color: var(--accent-blue);
+        }
+
+        .stat-card.total .stat-value {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab:hover,
+        .filter-tab.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .filter-tab.active {
+            background: var(--gradient-1);
+            border-color: transparent;
+        }
+
+        /* Stock Cards Grid */
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .stock-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .stock-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .stock-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Stock Card */
+        .stock-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .stock-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stock-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 0 100px rgba(102, 126, 234, 0.1);
+        }
+
+        .stock-card:hover::before {
+            opacity: 1;
+        }
+
+        .stock-card.buy::before {
+            background: var(--gradient-4);
+        }
+
+        .stock-card.no-buy::before {
+            background: var(--gradient-2);
+        }
+
+        /* Card Header */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .ticker-group {
+            flex: 1;
+        }
+
+        .ticker {
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+
+        .company-name {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 400;
+        }
+
+        .signal-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .signal-badge.buy {
+            background: rgba(0, 217, 145, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(0, 217, 145, 0.3);
+            box-shadow: 0 0 20px var(--accent-green-glow);
+        }
+
+        .signal-badge.no-buy {
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            box-shadow: 0 0 20px var(--accent-red-glow);
+        }
+
+        /* Price Section */
+        .price-section {
+            margin-bottom: 1.25rem;
+        }
+
+        .current-price {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .price-target {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .price-target span {
+            color: var(--accent-blue);
+            font-weight: 500;
+        }
+
+        /* EOY Projection Section */
+        .ytd-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .ytd-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .ytd-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .ytd-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .ytd-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .ytd-value.positive {
+            color: var(--accent-green);
+        }
+
+        .ytd-value.negative {
+            color: var(--accent-red);
+        }
+
+        .eoy-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .eoy-badge .arrow {
+            font-size: 0.75rem;
+        }
+
+        /* Conviction Bar */
+        .conviction-section {
+            margin-bottom: 1rem;
+        }
+
+        .conviction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .conviction-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .conviction-value {
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .conviction-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .conviction-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .conviction-fill.high {
+            background: linear-gradient(90deg, #00d991 0%, #38f9d7 100%);
+            box-shadow: 0 0 10px var(--accent-green-glow);
+        }
+
+        .conviction-fill.medium {
+            background: linear-gradient(90deg, #ff9f43 0%, #ffc658 100%);
+            box-shadow: 0 0 10px rgba(255, 159, 67, 0.3);
+        }
+
+        .conviction-fill.low {
+            background: linear-gradient(90deg, #ff4757 0%, #ff6b7a 100%);
+            box-shadow: 0 0 10px var(--accent-red-glow);
+        }
+
+        /* Category Badge */
+        .category-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Allocation */
+        .allocation-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-glass);
+        }
+
+        .allocation-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .allocation-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent-purple);
+        }
+
+        /* WSB Indicator */
+        .wsb-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-orange);
+            box-shadow: 0 0 10px rgba(255, 159, 67, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 3rem 0 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--gradient-1);
+            border-radius: 2px;
+        }
+
+        .section-title.buy::before {
+            background: var(--gradient-4);
+        }
+
+        .section-title.no-buy::before {
+            background: var(--gradient-2);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .stat-card .stat-value {
+                font-size: 2rem;
+            }
+
+            .ticker {
+                font-size: 1.5rem;
+            }
+
+            .current-price {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Upside Badge */
+        .upside-badge {
+            display: inline-block;
+            background: rgba(95, 159, 255, 0.1);
+            border: 1px solid rgba(95, 159, 255, 0.2);
+            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            color: var(--accent-blue);
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>AI Stock Portfolio</h1>
+            <p class="subtitle">Intelligent Investment Recommendations Powered by AI</p>
+            <p class="last-updated">Last Updated: February 3, 2026 at 11:45 PM UTC</p>
+        </header>
+
+        <!-- Summary Stats -->
+        <div class="summary-grid">
+            <div class="stat-card total">
+                <div class="stat-value">20</div>
+                <div class="stat-label">Total Stocks Analyzed</div>
+            </div>
+            <div class="stat-card buy">
+                <div class="stat-value">14</div>
+                <div class="stat-label">Buy Signals</div>
+            </div>
+            <div class="stat-card no-buy">
+                <div class="stat-value">6</div>
+                <div class="stat-label">No Buy Signals</div>
+            </div>
+            <div class="stat-card conviction">
+                <div class="stat-value">6.8</div>
+                <div class="stat-label">Avg Conviction Score</div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterCards('all')">All Stocks</button>
+            <button class="filter-tab" onclick="filterCards('buy')">Buy Only</button>
+            <button class="filter-tab" onclick="filterCards('no-buy')">No Buy</button>
+            <button class="filter-tab" onclick="filterCards('ai-infrastructure')">AI Infrastructure</button>
+            <button class="filter-tab" onclick="filterCards('big-tech')">Big Tech AI</button>
+            <button class="filter-tab" onclick="filterCards('cybersecurity')">Cybersecurity</button>
+            <button class="filter-tab" onclick="filterCards('ai-energy')">AI Energy</button>
+        </div>
+
+        <!-- Buy Recommendations Section -->
+        <h2 class="section-title buy">Buy Recommendations</h2>
+        <div class="stock-grid" id="buy-grid">
+            <!-- NVDA -->
+            <div class="stock-card buy" data-signal="buy" data-category="ai-infrastructure">
+                <div class="wsb-indicator" title="Trending on WSB"></div>
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">NVDA</div>
+                        <div class="company-name">Nvidia Corporation</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$179.30</div>
+                    <div class="price-target">Target: <span>$255-352</span> <span class="upside-badge">+42-96%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+12.4%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +45.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">8/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill high" style="width: 80%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">AI Infrastructure</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">12%</span>
+                </div>
+            </div>
+
+            <!-- AVGO -->
+            <div class="stock-card buy" data-signal="buy" data-category="ai-infrastructure">
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">AVGO</div>
+                        <div class="company-name">Broadcom Inc</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$317</div>
+                    <div class="price-target">Target: <span>$457-525</span> <span class="upside-badge">+44-66%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+8.2%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +35.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">7/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill high" style="width: 70%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">AI Infrastructure</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">10%</span>
+                </div>
+            </div>
+
+            <!-- TSM -->
+            <div class="stock-card buy" data-signal="buy" data-category="ai-infrastructure">
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">TSM</div>
+                        <div class="company-name">Taiwan Semiconductor</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$332</div>
+                    <div class="price-target">Target: <span>$392-450</span> <span class="upside-badge">+18-35%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+5.1%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +40.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">8/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill high" style="width: 80%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">AI Infrastructure</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">8%</span>
+                </div>
+            </div>
+
+            <!-- MRVL -->
+            <div class="stock-card buy" data-signal="buy" data-category="ai-infrastructure">
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">MRVL</div>
+                        <div class="company-name">Marvell Technology</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$74</div>
+                    <div class="price-target">Target: <span>$110-150</span> <span class="upside-badge">+49-103%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value negative">-3.2%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +55.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">6/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill medium" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">AI Infrastructure</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">5%</span>
+                </div>
+            </div>
+
+            <!-- ALAB -->
+            <div class="stock-card buy" data-signal="buy" data-category="ai-infrastructure">
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">ALAB</div>
+                        <div class="company-name">Astera Labs</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$157</div>
+                    <div class="price-target">Target: <span>$191-275</span> <span class="upside-badge">+22-75%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+18.5%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +48.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">7/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill high" style="width: 70%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">AI Infrastructure</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">5%</span>
+                </div>
+            </div>
+
+            <!-- META -->
+            <div class="stock-card buy" data-signal="buy" data-category="big-tech">
+                <div class="wsb-indicator" title="Trending on WSB"></div>
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">META</div>
+                        <div class="company-name">Meta Platforms</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$706</div>
+                    <div class="price-target">Target: <span>$822-920</span> <span class="upside-badge">+16-30%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+9.8%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +28.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">7/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill high" style="width: 70%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">Big Tech AI</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">10%</span>
+                </div>
+            </div>
+
+            <!-- GOOGL -->
+            <div class="stock-card buy" data-signal="buy" data-category="big-tech">
+                <div class="wsb-indicator" title="Trending on WSB"></div>
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">GOOGL</div>
+                        <div class="company-name">Alphabet Inc</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$339</div>
+                    <div class="price-target">Target: <span>$370-385</span> <span class="upside-badge">+9-14%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+7.3%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +22.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">7/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill high" style="width: 70%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">Big Tech AI</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">8%</span>
+                </div>
+            </div>
+
+            <!-- AMZN -->
+            <div class="stock-card buy" data-signal="buy" data-category="big-tech">
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">AMZN</div>
+                        <div class="company-name">Amazon.com</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$238</div>
+                    <div class="price-target">Target: <span>$295-340</span> <span class="upside-badge">+24-43%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+6.1%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +32.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">7/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill high" style="width: 70%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">Big Tech AI</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">7%</span>
+                </div>
+            </div>
+
+            <!-- CRWD -->
+            <div class="stock-card buy" data-signal="buy" data-category="cybersecurity">
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">CRWD</div>
+                        <div class="company-name">CrowdStrike Holdings</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$420</div>
+                    <div class="price-target">Target: <span>$551-640</span> <span class="upside-badge">+31-52%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+11.2%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +38.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">6/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill medium" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">Cybersecurity</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">5%</span>
+                </div>
+            </div>
+
+            <!-- PANW -->
+            <div class="stock-card buy" data-signal="buy" data-category="cybersecurity">
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">PANW</div>
+                        <div class="company-name">Palo Alto Networks</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$175</div>
+                    <div class="price-target">Target: <span>$227-265</span> <span class="upside-badge">+30-51%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value negative">-2.8%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +35.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">6/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill medium" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">Cybersecurity</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">5%</span>
+                </div>
+            </div>
+
+            <!-- ZS -->
+            <div class="stock-card buy" data-signal="buy" data-category="cybersecurity">
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">ZS</div>
+                        <div class="company-name">Zscaler</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$201</div>
+                    <div class="price-target">Target: <span>$319-390</span> <span class="upside-badge">+59-94%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+4.7%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +65.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">7/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill high" style="width: 70%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">Cybersecurity</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">6%</span>
+                </div>
+            </div>
+
+            <!-- DDOG -->
+            <div class="stock-card buy" data-signal="buy" data-category="cybersecurity">
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">DDOG</div>
+                        <div class="company-name">Datadog</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$130</div>
+                    <div class="price-target">Target: <span>$175-225</span> <span class="upside-badge">+35-73%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value negative">-5.1%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +42.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">6/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill medium" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">Cybersecurity</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">5%</span>
+                </div>
+            </div>
+
+            <!-- VST -->
+            <div class="stock-card buy" data-signal="buy" data-category="ai-energy">
+                <div class="wsb-indicator" title="Trending on WSB"></div>
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">VST</div>
+                        <div class="company-name">Vistra Corp</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$158</div>
+                    <div class="price-target">Target: <span>$237-293</span> <span class="upside-badge">+50-85%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+15.3%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +58.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">7/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill high" style="width: 70%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">AI Energy</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">7%</span>
+                </div>
+            </div>
+
+            <!-- TLN -->
+            <div class="stock-card buy" data-signal="buy" data-category="ai-energy">
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">TLN</div>
+                        <div class="company-name">Talen Energy</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$331</div>
+                    <div class="price-target">Target: <span>$455-576</span> <span class="upside-badge">+37-74%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+22.1%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +52.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">6/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill medium" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">AI Energy</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">4%</span>
+                </div>
+            </div>
+
+            <!-- VRT -->
+            <div class="stock-card buy" data-signal="buy" data-category="ai-energy">
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">VRT</div>
+                        <div class="company-name">Vertiv Holdings</div>
+                    </div>
+                    <span class="signal-badge buy">BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$190</div>
+                    <div class="price-target">Target: <span>$208-225</span> <span class="upside-badge">+9-18%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+3.8%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +18.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">6/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill medium" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">AI Energy</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">3%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Buy Recommendations Section -->
+        <h2 class="section-title no-buy">No Buy - Wait for Better Entry</h2>
+        <div class="stock-grid" id="no-buy-grid">
+            <!-- MU -->
+            <div class="stock-card no-buy" data-signal="no-buy" data-category="ai-infrastructure">
+                <div class="wsb-indicator" title="Trending on WSB"></div>
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">MU</div>
+                        <div class="company-name">Micron Technology</div>
+                    </div>
+                    <span class="signal-badge no-buy">NO BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$437</div>
+                    <div class="price-target">Target: <span>$320-400</span> <span class="upside-badge">-8% to -27%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+28.4%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value negative eoy-badge">
+                            <span class="arrow">&#9660;</span> -12.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">6/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill medium" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">AI Infrastructure</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">0%</span>
+                </div>
+            </div>
+
+            <!-- ASML -->
+            <div class="stock-card no-buy" data-signal="no-buy" data-category="ai-infrastructure">
+                <div class="wsb-indicator" title="Trending on WSB"></div>
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">ASML</div>
+                        <div class="company-name">ASML Holding</div>
+                    </div>
+                    <span class="signal-badge no-buy">NO BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$1,381</div>
+                    <div class="price-target">Target: <span>$1,475-1,572</span> <span class="upside-badge">+7-14%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+14.2%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value positive eoy-badge">
+                            <span class="arrow">&#9650;</span> +8.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">6/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill medium" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">AI Infrastructure</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">0%</span>
+                </div>
+            </div>
+
+            <!-- RKLB -->
+            <div class="stock-card no-buy" data-signal="no-buy" data-category="aerospace">
+                <div class="wsb-indicator" title="Trending on WSB"></div>
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">RKLB</div>
+                        <div class="company-name">Rocket Lab USA</div>
+                    </div>
+                    <span class="signal-badge no-buy">NO BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$78</div>
+                    <div class="price-target">Target: <span>$69-90</span> <span class="upside-badge">-12% to +15%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+35.2%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value negative eoy-badge">
+                            <span class="arrow">&#9660;</span> -5.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">6/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill medium" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">Aerospace</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">0%</span>
+                </div>
+            </div>
+
+            <!-- CCJ -->
+            <div class="stock-card no-buy" data-signal="no-buy" data-category="ai-energy">
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">CCJ</div>
+                        <div class="company-name">Cameco Corporation</div>
+                    </div>
+                    <span class="signal-badge no-buy">NO BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$126</div>
+                    <div class="price-target">Target: <span>$110-121</span> <span class="upside-badge">-4% to -13%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+18.7%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value negative eoy-badge">
+                            <span class="arrow">&#9660;</span> -8.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">5/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill low" style="width: 50%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">AI Energy</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">0%</span>
+                </div>
+            </div>
+
+            <!-- STX -->
+            <div class="stock-card no-buy" data-signal="no-buy" data-category="ai-storage">
+                <div class="card-header">
+                    <div class="ticker-group">
+                        <div class="ticker">STX</div>
+                        <div class="company-name">Seagate Technology</div>
+                    </div>
+                    <span class="signal-badge no-buy">NO BUY</span>
+                </div>
+                <div class="price-section">
+                    <div class="current-price">$440</div>
+                    <div class="price-target">Target: <span>$333-417</span> <span class="upside-badge">-5% to -24%</span></div>
+                </div>
+                <div class="ytd-section">
+                    <div class="ytd-row">
+                        <span class="ytd-label">YTD Gain (Actual)</span>
+                        <span class="ytd-value positive">+42.3%</span>
+                    </div>
+                    <div class="ytd-row">
+                        <span class="ytd-label">2026 EOY Target</span>
+                        <span class="ytd-value negative eoy-badge">
+                            <span class="arrow">&#9660;</span> -15.0%
+                        </span>
+                    </div>
+                </div>
+                <div class="conviction-section">
+                    <div class="conviction-header">
+                        <span class="conviction-label">Conviction Score</span>
+                        <span class="conviction-value">5/10</span>
+                    </div>
+                    <div class="conviction-bar">
+                        <div class="conviction-fill low" style="width: 50%;"></div>
+                    </div>
+                </div>
+                <span class="category-badge">AI Storage</span>
+                <div class="allocation-section">
+                    <span class="allocation-label">Portfolio Allocation</span>
+                    <span class="allocation-value">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>AI-Powered Stock Analysis | Data updated daily</p>
+            <p style="margin-top: 0.5rem;">Disclaimer: This is not financial advice. Always do your own research.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Filter functionality
+        function filterCards(filter) {
+            const allCards = document.querySelectorAll('.stock-card');
+            const tabs = document.querySelectorAll('.filter-tab');
+
+            // Update active tab
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show/hide cards based on filter
+            allCards.forEach(card => {
+                const signal = card.dataset.signal;
+                const category = card.dataset.category;
+
+                let show = false;
+
+                switch(filter) {
+                    case 'all':
+                        show = true;
+                        break;
+                    case 'buy':
+                        show = signal === 'buy';
+                        break;
+                    case 'no-buy':
+                        show = signal === 'no-buy';
+                        break;
+                    case 'ai-infrastructure':
+                        show = category === 'ai-infrastructure';
+                        break;
+                    case 'big-tech':
+                        show = category === 'big-tech';
+                        break;
+                    case 'cybersecurity':
+                        show = category === 'cybersecurity';
+                        break;
+                    case 'ai-energy':
+                        show = category === 'ai-energy';
+                        break;
+                    default:
+                        show = true;
+                }
+
+                card.style.display = show ? 'block' : 'none';
+            });
+
+            // Show/hide section titles based on visible cards
+            const buySection = document.querySelector('.section-title.buy');
+            const noBuySection = document.querySelector('.section-title.no-buy');
+            const buyCards = document.querySelectorAll('#buy-grid .stock-card');
+            const noBuyCards = document.querySelectorAll('#no-buy-grid .stock-card');
+
+            let visibleBuyCards = 0;
+            let visibleNoBuyCards = 0;
+
+            buyCards.forEach(card => {
+                if (card.style.display !== 'none') visibleBuyCards++;
+            });
+
+            noBuyCards.forEach(card => {
+                if (card.style.display !== 'none') visibleNoBuyCards++;
+            });
+
+            buySection.style.display = visibleBuyCards > 0 ? 'flex' : 'none';
+            noBuySection.style.display = visibleNoBuyCards > 0 ? 'flex' : 'none';
+        }
+
+        // Add subtle parallax effect on mouse move
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.stock-card');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const cardX = (rect.left + rect.width / 2) / window.innerWidth;
+                const cardY = (rect.top + rect.height / 2) / window.innerHeight;
+
+                const deltaX = (x - cardX) * 5;
+                const deltaY = (y - cardY) * 5;
+
+                card.style.transform = `perspective(1000px) rotateY(${deltaX}deg) rotateX(${-deltaY}deg)`;
+            });
+        });
+
+        // Reset card transforms on mouse leave
+        document.addEventListener('mouseleave', () => {
+            const cards = document.querySelectorAll('.stock-card');
+            cards.forEach(card => {
+                card.style.transform = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

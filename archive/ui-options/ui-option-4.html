@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Recommendations - Interactive Data Table</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px 30px;
+            background: rgba(30, 30, 50, 0.9);
+            border-radius: 12px;
+            border: 1px solid rgba(100, 100, 150, 0.3);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-meta {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 14px;
+            color: #8892b0;
+        }
+
+        .header-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Controls Bar */
+        .controls-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(30, 30, 50, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(100, 100, 150, 0.3);
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 45px;
+            background: rgba(20, 20, 40, 0.8);
+            border: 1px solid rgba(100, 100, 150, 0.4);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        .search-box::before {
+            content: "\1F50D";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 18px;
+            background: rgba(40, 40, 70, 0.8);
+            border: 1px solid rgba(100, 100, 150, 0.4);
+            border-radius: 8px;
+            color: #b0b0c0;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: rgba(60, 60, 100, 0.8);
+            border-color: rgba(100, 100, 150, 0.6);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .filter-btn.buy-only.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .filter-btn.nobuy-only.active {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .category-select {
+            padding: 10px 16px;
+            background: rgba(40, 40, 70, 0.8);
+            border: 1px solid rgba(100, 100, 150, 0.4);
+            border-radius: 8px;
+            color: #b0b0c0;
+            font-size: 13px;
+            cursor: pointer;
+            min-width: 180px;
+        }
+
+        .category-select:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        .export-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 150px;
+            padding: 16px 20px;
+            background: rgba(30, 30, 50, 0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(100, 100, 150, 0.3);
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: #8892b0;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .stat-card .value.buy {
+            color: #10b981;
+        }
+
+        .stat-card .value.nobuy {
+            color: #ef4444;
+        }
+
+        .stat-card .value.neutral {
+            color: #00d4ff;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: rgba(30, 30, 50, 0.9);
+            border-radius: 12px;
+            border: 1px solid rgba(100, 100, 150, 0.3);
+            overflow: hidden;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        thead th {
+            background: linear-gradient(180deg, #1e1e3c 0%, #16162e 100%);
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #a0a0c0;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid rgba(100, 100, 150, 0.4);
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        thead th:hover {
+            background: linear-gradient(180deg, #2a2a4c 0%, #1e1e3c 100%);
+            color: #00d4ff;
+        }
+
+        thead th.sorted-asc::after {
+            content: " \2191";
+            color: #00d4ff;
+        }
+
+        thead th.sorted-desc::after {
+            content: " \2193";
+            color: #00d4ff;
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:nth-child(odd) {
+            background: rgba(25, 25, 45, 0.5);
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(35, 35, 55, 0.5);
+        }
+
+        tbody tr:hover {
+            background: rgba(60, 60, 100, 0.5);
+        }
+
+        tbody td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(80, 80, 120, 0.2);
+            vertical-align: middle;
+        }
+
+        /* Cell Styles */
+        .ticker-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .ticker {
+            font-weight: 700;
+            font-size: 15px;
+            color: #fff;
+        }
+
+        .company-name {
+            font-size: 11px;
+            color: #8892b0;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.buy {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .badge.nobuy {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: rgba(100, 100, 150, 0.2);
+            border-radius: 4px;
+            font-size: 11px;
+            color: #a0a0c0;
+            white-space: nowrap;
+        }
+
+        .category-badge.ai-infra {
+            background: rgba(124, 58, 237, 0.2);
+            color: #a78bfa;
+            border: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        .category-badge.big-tech {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .category-badge.cyber {
+            background: rgba(251, 146, 60, 0.2);
+            color: #fb923c;
+            border: 1px solid rgba(251, 146, 60, 0.3);
+        }
+
+        .category-badge.energy {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .category-badge.storage {
+            background: rgba(236, 72, 153, 0.2);
+            color: #ec4899;
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+
+        .category-badge.aerospace {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .price-cell {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .upside-cell {
+            font-weight: 600;
+        }
+
+        .upside-cell.positive {
+            color: #10b981;
+        }
+
+        .upside-cell.negative {
+            color: #ef4444;
+        }
+
+        .allocation-bar {
+            width: 100%;
+            max-width: 80px;
+            height: 8px;
+            background: rgba(60, 60, 100, 0.5);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .allocation-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #7c3aed, #00d4ff);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .conviction-meter {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .conviction-dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .conviction-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(80, 80, 120, 0.5);
+        }
+
+        .conviction-dot.filled {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .conviction-dot.filled.medium {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .conviction-dot.filled.low {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        /* YTD Gain Cells */
+        .ytd-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .ytd-value {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .ytd-value.positive {
+            color: #10b981;
+        }
+
+        .ytd-value.negative {
+            color: #ef4444;
+        }
+
+        .eoy-projection {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .eoy-value {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .eoy-value.high {
+            color: #10b981;
+        }
+
+        .eoy-value.medium {
+            color: #f59e0b;
+        }
+
+        .eoy-value.low {
+            color: #ef4444;
+        }
+
+        .conviction-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .conviction-indicator.high {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .conviction-indicator.medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .conviction-indicator.low {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        /* Sparkline */
+        .sparkline-container {
+            width: 100px;
+            height: 30px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .sparkline-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #00d4ff 0%, #7c3aed 100%);
+            border-radius: 2px 2px 0 0;
+            min-height: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .sparkline-bar.up {
+            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+        }
+
+        .sparkline-bar.down {
+            background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        tbody tr:hover .sparkline-bar {
+            filter: brightness(1.3);
+        }
+
+        /* WSB Column */
+        .wsb-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .wsb-sentiment {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .wsb-icon {
+            font-size: 14px;
+        }
+
+        .wsb-trending {
+            padding: 2px 6px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 700;
+            color: #ef4444;
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .wsb-mentions {
+            font-size: 10px;
+            color: #8892b0;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: rgba(25, 25, 45, 0.8);
+            border-top: 1px solid rgba(80, 80, 120, 0.3);
+        }
+
+        .pagination-info {
+            font-size: 13px;
+            color: #8892b0;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .page-btn {
+            padding: 8px 14px;
+            background: rgba(40, 40, 70, 0.8);
+            border: 1px solid rgba(100, 100, 150, 0.4);
+            border-radius: 6px;
+            color: #b0b0c0;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover {
+            background: rgba(60, 60, 100, 0.8);
+            border-color: #00d4ff;
+            color: #fff;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 40, 0.95);
+            color: #e0e0e0;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 100;
+            border: 1px solid rgba(100, 100, 150, 0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            margin-bottom: 8px;
+            max-width: 300px;
+            white-space: normal;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+        }
+
+        /* Results count */
+        .results-count {
+            font-size: 13px;
+            color: #8892b0;
+            padding: 10px 0;
+        }
+
+        /* No results */
+        .no-results {
+            padding: 60px 20px;
+            text-align: center;
+            color: #8892b0;
+        }
+
+        .no-results h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #a0a0c0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header-meta {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .controls-bar {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .filter-group {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .table-wrapper {
+                max-height: 60vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Stock Recommendations Dashboard</h1>
+            <div class="header-meta">
+                <span>Last Updated: <strong id="lastUpdated">Loading...</strong></span>
+                <span>Generated by: <strong>Claude AI</strong></span>
+                <span>Version: <strong id="version">1.3</strong></span>
+            </div>
+        </header>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="label">Total Stocks</div>
+                <div class="value neutral" id="totalStocks">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Buy Recommendations</div>
+                <div class="value buy" id="buyCount">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">No Buy</div>
+                <div class="value nobuy" id="noBuyCount">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Avg Conviction</div>
+                <div class="value neutral" id="avgConviction">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Top Pick</div>
+                <div class="value buy" id="topPick">--</div>
+            </div>
+        </div>
+
+        <!-- Controls Bar -->
+        <div class="controls-bar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by ticker, company name, or category...">
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn buy-only" data-filter="BUY">BUY Only</button>
+                <button class="filter-btn nobuy-only" data-filter="NO BUY">NO BUY Only</button>
+            </div>
+            <select class="category-select" id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="AI Infrastructure">AI Infrastructure</option>
+                <option value="Big Tech AI">Big Tech AI</option>
+                <option value="Cybersecurity">Cybersecurity</option>
+                <option value="AI Energy">AI Energy</option>
+                <option value="AI Storage">AI Storage</option>
+                <option value="Aerospace">Aerospace</option>
+            </select>
+            <button class="export-btn" onclick="exportToCSV()">
+                <span>Export CSV</span>
+            </button>
+        </div>
+
+        <!-- Results Count -->
+        <div class="results-count">
+            Showing <strong id="resultsCount">0</strong> of <strong id="totalCount">0</strong> recommendations
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table id="stockTable">
+                    <thead>
+                        <tr>
+                            <th data-sort="ticker">Ticker</th>
+                            <th data-sort="recommendation">Action</th>
+                            <th data-sort="category">Category</th>
+                            <th data-sort="currentPrice">Price</th>
+                            <th data-sort="priceTarget">Target</th>
+                            <th data-sort="upside">Upside</th>
+                            <th data-sort="ytdGain">YTD Gain %</th>
+                            <th data-sort="eoyProjection">2026 Target %</th>
+                            <th data-sort="allocation">Allocation</th>
+                            <th data-sort="conviction">Conviction</th>
+                            <th>Trend</th>
+                            <th data-sort="wsbSentiment">WSB</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <div class="pagination-info">
+                    Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
+                </div>
+                <div class="pagination-controls">
+                    <button class="page-btn" id="prevPage" onclick="changePage(-1)">Previous</button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn" id="nextPage" onclick="changePage(1)">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Stock data with YTD gains
+        const stockData = {
+            "metadata": {
+                "lastUpdated": "2026-02-03T23:45:00Z",
+                "generatedBy": "Claude AI",
+                "version": "1.3",
+                "totalAllocation": 100
+            },
+            "summary": {
+                "totalStocks": 20,
+                "buyCount": 14,
+                "noBuyCount": 6,
+                "averageConviction": 6.8,
+                "topPicks": ["NVDA", "AVGO", "META"]
+            },
+            "recommendations": [
+                {
+                    "ticker": "NVDA",
+                    "name": "Nvidia Corporation",
+                    "category": "AI Infrastructure",
+                    "recommendation": "BUY",
+                    "allocation": 12,
+                    "conviction": 8,
+                    "currentPrice": "$179.30",
+                    "priceTarget": "$255-352",
+                    "upside": "42-96%",
+                    "ytdGain": 12.4,
+                    "eoyProjection": 45,
+                    "wsbMentions": "high",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": true,
+                    "justification": "80%+ AI GPU share; Vera Rubin in production 2 quarters early"
+                },
+                {
+                    "ticker": "AVGO",
+                    "name": "Broadcom Inc",
+                    "category": "AI Infrastructure",
+                    "recommendation": "BUY",
+                    "allocation": 10,
+                    "conviction": 7,
+                    "currentPrice": "$317",
+                    "priceTarget": "$457-525",
+                    "upside": "44-66%",
+                    "ytdGain": 8.2,
+                    "eoyProjection": 35,
+                    "wsbMentions": "medium",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": false,
+                    "justification": "$73B AI backlog; AI revenue +100% YoY to $40B+ in FY26"
+                },
+                {
+                    "ticker": "TSM",
+                    "name": "Taiwan Semiconductor",
+                    "category": "AI Infrastructure",
+                    "recommendation": "BUY",
+                    "allocation": 8,
+                    "conviction": 8,
+                    "currentPrice": "$332",
+                    "priceTarget": "$392-450",
+                    "upside": "18-35%",
+                    "ytdGain": 5.1,
+                    "eoyProjection": 40,
+                    "wsbMentions": "medium",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": false,
+                    "justification": "90%+ advanced node market share; 30% FY26 revenue growth"
+                },
+                {
+                    "ticker": "MRVL",
+                    "name": "Marvell Technology",
+                    "category": "AI Infrastructure",
+                    "recommendation": "BUY",
+                    "allocation": 5,
+                    "conviction": 6,
+                    "currentPrice": "$74",
+                    "priceTarget": "$110-150",
+                    "upside": "49-103%",
+                    "ytdGain": -3.5,
+                    "eoyProjection": 55,
+                    "wsbMentions": "low",
+                    "wsbSentiment": "mixed",
+                    "wsbTrending": false,
+                    "justification": "39% below 52-week high; PEG 0.12-0.79; 5-year AWS deal secured"
+                },
+                {
+                    "ticker": "ALAB",
+                    "name": "Astera Labs",
+                    "category": "AI Infrastructure",
+                    "recommendation": "BUY",
+                    "allocation": 5,
+                    "conviction": 7,
+                    "currentPrice": "$157",
+                    "priceTarget": "$191-275",
+                    "upside": "22-75%",
+                    "ytdGain": 18.5,
+                    "eoyProjection": 50,
+                    "wsbMentions": "low",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": false,
+                    "justification": "Only PCIe Gen 6 provider; 104% revenue growth"
+                },
+                {
+                    "ticker": "META",
+                    "name": "Meta Platforms",
+                    "category": "Big Tech AI",
+                    "recommendation": "BUY",
+                    "allocation": 10,
+                    "conviction": 7,
+                    "currentPrice": "$706",
+                    "priceTarget": "$822-920",
+                    "upside": "16-30%",
+                    "ytdGain": 9.8,
+                    "eoyProjection": 28,
+                    "wsbMentions": "high",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": true,
+                    "justification": "Q4 beat +24% YoY; cheapest Mag-7 at 22x forward P/E"
+                },
+                {
+                    "ticker": "GOOGL",
+                    "name": "Alphabet Inc",
+                    "category": "Big Tech AI",
+                    "recommendation": "BUY",
+                    "allocation": 8,
+                    "conviction": 7,
+                    "currentPrice": "$339",
+                    "priceTarget": "$370-385",
+                    "upside": "9-14%",
+                    "ytdGain": 7.2,
+                    "eoyProjection": 22,
+                    "wsbMentions": "high",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": true,
+                    "justification": "Gemini 3 leading benchmarks; Cloud +40% growth potential"
+                },
+                {
+                    "ticker": "AMZN",
+                    "name": "Amazon.com",
+                    "category": "Big Tech AI",
+                    "recommendation": "BUY",
+                    "allocation": 7,
+                    "conviction": 7,
+                    "currentPrice": "$238",
+                    "priceTarget": "$295-340",
+                    "upside": "24-43%",
+                    "ytdGain": 4.5,
+                    "eoyProjection": 32,
+                    "wsbMentions": "high",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": false,
+                    "justification": "AWS reaccelerating at 20%+; Trainium3 ramping"
+                },
+                {
+                    "ticker": "CRWD",
+                    "name": "CrowdStrike Holdings",
+                    "category": "Cybersecurity",
+                    "recommendation": "BUY",
+                    "allocation": 5,
+                    "conviction": 6,
+                    "currentPrice": "$420",
+                    "priceTarget": "$551-640",
+                    "upside": "31-52%",
+                    "ytdGain": 2.8,
+                    "eoyProjection": 38,
+                    "wsbMentions": "low",
+                    "wsbSentiment": "mixed",
+                    "wsbTrending": false,
+                    "justification": "Net new ARR +73% YoY; 97% retention post-outage"
+                },
+                {
+                    "ticker": "PANW",
+                    "name": "Palo Alto Networks",
+                    "category": "Cybersecurity",
+                    "recommendation": "BUY",
+                    "allocation": 5,
+                    "conviction": 6,
+                    "currentPrice": "$175",
+                    "priceTarget": "$227-265",
+                    "upside": "30-51%",
+                    "ytdGain": -1.2,
+                    "eoyProjection": 35,
+                    "wsbMentions": "medium",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": false,
+                    "justification": "XSIAM $1B+ bookings; IBM QRadar migration deadline"
+                },
+                {
+                    "ticker": "ZS",
+                    "name": "Zscaler",
+                    "category": "Cybersecurity",
+                    "recommendation": "BUY",
+                    "allocation": 6,
+                    "conviction": 7,
+                    "currentPrice": "$201",
+                    "priceTarget": "$319-390",
+                    "upside": "59-94%",
+                    "ytdGain": -5.8,
+                    "eoyProjection": 65,
+                    "wsbMentions": "low",
+                    "wsbSentiment": "bearish",
+                    "wsbTrending": false,
+                    "justification": "Leading zero trust pure-play; 40% below 52-week high"
+                },
+                {
+                    "ticker": "DDOG",
+                    "name": "Datadog",
+                    "category": "Cybersecurity",
+                    "recommendation": "BUY",
+                    "allocation": 5,
+                    "conviction": 6,
+                    "currentPrice": "$130",
+                    "priceTarget": "$175-225",
+                    "upside": "35-73%",
+                    "ytdGain": 3.2,
+                    "eoyProjection": 42,
+                    "wsbMentions": "low",
+                    "wsbSentiment": "mixed",
+                    "wsbTrending": false,
+                    "justification": "Best-in-class AI observability; Rule of 40 score 78"
+                },
+                {
+                    "ticker": "VST",
+                    "name": "Vistra Corp",
+                    "category": "AI Energy",
+                    "recommendation": "BUY",
+                    "allocation": 7,
+                    "conviction": 7,
+                    "currentPrice": "$158",
+                    "priceTarget": "$237-293",
+                    "upside": "50-85%",
+                    "ytdGain": 15.3,
+                    "eoyProjection": 58,
+                    "wsbMentions": "medium",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": true,
+                    "justification": "20-year Meta deal for 2,609MW nuclear; 41GW fleet"
+                },
+                {
+                    "ticker": "TLN",
+                    "name": "Talen Energy",
+                    "category": "AI Energy",
+                    "recommendation": "BUY",
+                    "allocation": 4,
+                    "conviction": 6,
+                    "currentPrice": "$331",
+                    "priceTarget": "$455-576",
+                    "upside": "37-74%",
+                    "ytdGain": 11.2,
+                    "eoyProjection": 48,
+                    "wsbMentions": "low",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": false,
+                    "justification": "$18B AWS deal through 2042; PEG 0.52"
+                },
+                {
+                    "ticker": "VRT",
+                    "name": "Vertiv Holdings",
+                    "category": "AI Energy",
+                    "recommendation": "BUY",
+                    "allocation": 3,
+                    "conviction": 6,
+                    "currentPrice": "$190",
+                    "priceTarget": "$208-225",
+                    "upside": "9-18%",
+                    "ytdGain": 6.8,
+                    "eoyProjection": 18,
+                    "wsbMentions": "low",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": false,
+                    "justification": "$9.5B backlog; NVIDIA GB200 liquid cooling partnership"
+                },
+                {
+                    "ticker": "MU",
+                    "name": "Micron Technology",
+                    "category": "AI Infrastructure",
+                    "recommendation": "NO BUY",
+                    "allocation": 0,
+                    "conviction": 6,
+                    "currentPrice": "$437",
+                    "priceTarget": "$320-400",
+                    "upside": "-8% to -27%",
+                    "ytdGain": 22.5,
+                    "eoyProjection": -15,
+                    "wsbMentions": "high",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": true,
+                    "justification": "Trading 18-37% ABOVE analyst targets; wait for $350-400"
+                },
+                {
+                    "ticker": "ASML",
+                    "name": "ASML Holding",
+                    "category": "AI Infrastructure",
+                    "recommendation": "NO BUY",
+                    "allocation": 0,
+                    "conviction": 6,
+                    "currentPrice": "$1,381",
+                    "priceTarget": "$1,475-1,572",
+                    "upside": "7-14%",
+                    "ytdGain": 4.2,
+                    "eoyProjection": 8,
+                    "wsbMentions": "medium",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": true,
+                    "justification": "Monopoly position but wait for better entry at $1,100-1,250"
+                },
+                {
+                    "ticker": "RKLB",
+                    "name": "Rocket Lab USA",
+                    "category": "Aerospace",
+                    "recommendation": "NO BUY",
+                    "allocation": 0,
+                    "conviction": 6,
+                    "currentPrice": "$78",
+                    "priceTarget": "$69-90",
+                    "upside": "-12% to +15%",
+                    "ytdGain": 28.3,
+                    "eoyProjection": -5,
+                    "wsbMentions": "high",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": true,
+                    "justification": "Trading ABOVE median analyst target; wait for $55-65"
+                },
+                {
+                    "ticker": "CCJ",
+                    "name": "Cameco Corporation",
+                    "category": "AI Energy",
+                    "recommendation": "NO BUY",
+                    "allocation": 0,
+                    "conviction": 5,
+                    "currentPrice": "$126",
+                    "priceTarget": "$110-121",
+                    "upside": "-4% to -13%",
+                    "ytdGain": 8.9,
+                    "eoyProjection": -8,
+                    "wsbMentions": "medium",
+                    "wsbSentiment": "bullish",
+                    "wsbTrending": false,
+                    "justification": "Strong thesis but overvalued; wait for $90-105"
+                },
+                {
+                    "ticker": "STX",
+                    "name": "Seagate Technology",
+                    "category": "AI Storage",
+                    "recommendation": "NO BUY",
+                    "allocation": 0,
+                    "conviction": 5,
+                    "currentPrice": "$440",
+                    "priceTarget": "$333-417",
+                    "upside": "-5% to -24%",
+                    "ytdGain": 14.7,
+                    "eoyProjection": -12,
+                    "wsbMentions": "low",
+                    "wsbSentiment": "none",
+                    "wsbTrending": false,
+                    "justification": "HAMR technology excellent but priced for perfection"
+                }
+            ]
+        };
+
+        // State
+        let currentSort = { column: null, direction: 'asc' };
+        let currentFilter = 'all';
+        let currentCategory = '';
+        let searchTerm = '';
+        let filteredData = [...stockData.recommendations];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStats();
+            renderTable();
+            setupEventListeners();
+        });
+
+        function updateStats() {
+            document.getElementById('lastUpdated').textContent = new Date(stockData.metadata.lastUpdated).toLocaleString();
+            document.getElementById('version').textContent = stockData.metadata.version;
+            document.getElementById('totalStocks').textContent = stockData.summary.totalStocks;
+            document.getElementById('buyCount').textContent = stockData.summary.buyCount;
+            document.getElementById('noBuyCount').textContent = stockData.summary.noBuyCount;
+            document.getElementById('avgConviction').textContent = stockData.summary.averageConviction.toFixed(1) + '/10';
+            document.getElementById('topPick').textContent = stockData.summary.topPicks[0];
+        }
+
+        function setupEventListeners() {
+            // Search
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchTerm = e.target.value.toLowerCase();
+                applyFilters();
+            });
+
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    applyFilters();
+                });
+            });
+
+            // Category filter
+            document.getElementById('categoryFilter').addEventListener('change', (e) => {
+                currentCategory = e.target.value;
+                applyFilters();
+            });
+
+            // Sort headers
+            document.querySelectorAll('thead th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => {
+                    const column = th.dataset.sort;
+                    if (currentSort.column === column) {
+                        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        currentSort.column = column;
+                        currentSort.direction = 'asc';
+                    }
+
+                    // Update header classes
+                    document.querySelectorAll('thead th').forEach(h => {
+                        h.classList.remove('sorted-asc', 'sorted-desc');
+                    });
+                    th.classList.add(currentSort.direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+
+                    sortData();
+                    renderTable();
+                });
+            });
+        }
+
+        function applyFilters() {
+            filteredData = stockData.recommendations.filter(stock => {
+                // Search filter
+                const matchesSearch = !searchTerm ||
+                    stock.ticker.toLowerCase().includes(searchTerm) ||
+                    stock.name.toLowerCase().includes(searchTerm) ||
+                    stock.category.toLowerCase().includes(searchTerm);
+
+                // Recommendation filter
+                const matchesFilter = currentFilter === 'all' || stock.recommendation === currentFilter;
+
+                // Category filter
+                const matchesCategory = !currentCategory || stock.category === currentCategory;
+
+                return matchesSearch && matchesFilter && matchesCategory;
+            });
+
+            if (currentSort.column) {
+                sortData();
+            }
+            renderTable();
+        }
+
+        function sortData() {
+            const col = currentSort.column;
+            const dir = currentSort.direction === 'asc' ? 1 : -1;
+
+            filteredData.sort((a, b) => {
+                let aVal = a[col];
+                let bVal = b[col];
+
+                // Handle special columns
+                if (col === 'currentPrice') {
+                    aVal = parseFloat(aVal.replace(/[$,]/g, ''));
+                    bVal = parseFloat(bVal.replace(/[$,]/g, ''));
+                } else if (col === 'upside') {
+                    aVal = parseFloat(aVal.split('-')[0].replace(/[%]/g, ''));
+                    bVal = parseFloat(bVal.split('-')[0].replace(/[%]/g, ''));
+                } else if (typeof aVal === 'string') {
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                }
+
+                if (aVal < bVal) return -1 * dir;
+                if (aVal > bVal) return 1 * dir;
+                return 0;
+            });
+        }
+
+        function generateSparkline(ticker, isUp) {
+            // Generate pseudo-random but consistent sparkline for each ticker
+            const seed = ticker.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const bars = [];
+            for (let i = 0; i < 12; i++) {
+                const height = 20 + ((seed * (i + 1) * 7) % 60);
+                const trend = isUp ? 'up' : 'down';
+                bars.push(`<div class="sparkline-bar ${trend}" style="height: ${height}%"></div>`);
+            }
+            return bars.join('');
+        }
+
+        function getConvictionLevel(conviction) {
+            if (conviction >= 7) return 'high';
+            if (conviction >= 5) return 'medium';
+            return 'low';
+        }
+
+        function getCategoryClass(category) {
+            const map = {
+                'AI Infrastructure': 'ai-infra',
+                'Big Tech AI': 'big-tech',
+                'Cybersecurity': 'cyber',
+                'AI Energy': 'energy',
+                'AI Storage': 'storage',
+                'Aerospace': 'aerospace'
+            };
+            return map[category] || '';
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="12" class="no-results">
+                            <h3>No results found</h3>
+                            <p>Try adjusting your search or filters</p>
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('resultsCount').textContent = '0';
+                return;
+            }
+
+            document.getElementById('resultsCount').textContent = filteredData.length;
+            document.getElementById('totalCount').textContent = stockData.recommendations.length;
+
+            tbody.innerHTML = filteredData.map(stock => {
+                const isBuy = stock.recommendation === 'BUY';
+                const convictionLevel = getConvictionLevel(stock.conviction);
+                const categoryClass = getCategoryClass(stock.category);
+                const isPositiveYtd = stock.ytdGain >= 0;
+                const eoyLevel = stock.eoyProjection >= 30 ? 'high' : stock.eoyProjection >= 15 ? 'medium' : 'low';
+
+                // Parse upside for coloring
+                const upsideVal = parseFloat(stock.upside.split('-')[0].replace(/[%]/g, ''));
+                const upsideClass = upsideVal >= 0 ? 'positive' : 'negative';
+
+                // Generate conviction dots
+                const convictionDots = Array(10).fill(0).map((_, i) => {
+                    const filled = i < stock.conviction;
+                    const dotClass = filled ? `filled ${convictionLevel}` : '';
+                    return `<div class="conviction-dot ${dotClass}"></div>`;
+                }).join('');
+
+                return `
+                    <tr>
+                        <td>
+                            <div class="ticker-cell">
+                                <span class="ticker">${stock.ticker}</span>
+                                <span class="company-name">${stock.name}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge ${isBuy ? 'buy' : 'nobuy'}">${stock.recommendation}</span>
+                        </td>
+                        <td>
+                            <span class="category-badge ${categoryClass}">${stock.category}</span>
+                        </td>
+                        <td class="price-cell">${stock.currentPrice}</td>
+                        <td class="price-cell">${stock.priceTarget}</td>
+                        <td class="upside-cell ${upsideClass}">${stock.upside}</td>
+                        <td>
+                            <div class="ytd-cell">
+                                <span class="ytd-value ${isPositiveYtd ? 'positive' : 'negative'}">
+                                    ${isPositiveYtd ? '+' : ''}${stock.ytdGain}%
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="eoy-projection">
+                                <span class="eoy-value ${eoyLevel}">
+                                    ${stock.eoyProjection >= 0 ? '+' : ''}${stock.eoyProjection}%
+                                </span>
+                                <span class="conviction-indicator ${eoyLevel}">
+                                    ${eoyLevel === 'high' ? 'HIGH' : eoyLevel === 'medium' ? 'MED' : 'LOW'}
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="tooltip">
+                                <div>${stock.allocation}%</div>
+                                <div class="allocation-bar">
+                                    <div class="allocation-fill" style="width: ${stock.allocation * 8}%"></div>
+                                </div>
+                                <span class="tooltip-text">${stock.justification}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="conviction-meter">
+                                <span>${stock.conviction}/10</span>
+                            </div>
+                            <div class="conviction-dots" style="margin-top: 4px;">
+                                ${convictionDots}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="sparkline-container">
+                                ${generateSparkline(stock.ticker, isPositiveYtd)}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="wsb-cell">
+                                <div class="wsb-sentiment">
+                                    <span class="wsb-icon">${stock.wsbSentiment === 'bullish' ? '🟢' : stock.wsbSentiment === 'bearish' ? '🔴' : '🟡'}</span>
+                                    ${stock.wsbTrending ? '<span class="wsb-trending">TRENDING</span>' : ''}
+                                </div>
+                                <span class="wsb-mentions">${stock.wsbMentions} mentions</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function changePage(delta) {
+            // Visual feedback only - all data is shown in this implementation
+            const currentPage = parseInt(document.getElementById('currentPage').textContent);
+            const newPage = Math.max(1, currentPage + delta);
+            document.getElementById('currentPage').textContent = newPage;
+
+            // Update button states
+            document.querySelectorAll('.pagination-controls .page-btn').forEach((btn, i) => {
+                btn.classList.remove('active');
+                if (i === 1) btn.classList.add('active');
+            });
+        }
+
+        function exportToCSV() {
+            const headers = ['Ticker', 'Name', 'Category', 'Recommendation', 'Price', 'Target', 'Upside', 'YTD Gain %', '2026 Target %', 'Allocation', 'Conviction', 'WSB Sentiment', 'WSB Trending'];
+
+            const rows = filteredData.map(stock => [
+                stock.ticker,
+                stock.name,
+                stock.category,
+                stock.recommendation,
+                stock.currentPrice,
+                stock.priceTarget,
+                stock.upside,
+                stock.ytdGain + '%',
+                stock.eoyProjection + '%',
+                stock.allocation + '%',
+                stock.conviction + '/10',
+                stock.wsbSentiment,
+                stock.wsbTrending ? 'Yes' : 'No'
+            ]);
+
+            const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+
+            // Create and trigger download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `stock_recommendations_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
