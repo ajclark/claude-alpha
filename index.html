@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Alpha</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Mono', Consolas, monospace;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid #2a2a2a;
+            margin-bottom: 30px;
+        }
+        .claude-logo {
+            display: none;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #e0e0e0;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .timestamp {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .powered-by {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        .powered-by .anthropic {
+            color: #fff;
+            font-weight: 600;
+        }
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            background: #141414;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #2a2a2a;
+        }
+        .summary-card h3 {
+            color: #777;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .summary-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .buy-count { color: #4a4; }
+        .hold-count { color: #aa4; }
+        .nobuy-count { color: #a44; }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        .portfolio-allocation {
+            background: #141414;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #2a2a2a;
+        }
+        .allocation-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .allocation-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .allocation-segment:hover {
+            filter: brightness(1.3);
+            transform: scaleY(1.1);
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        .stock-card:target {
+            outline: 2px solid #4a4;
+            outline-offset: 4px;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stock-card {
+            background: #141414;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #2a2a2a;
+        }
+        .stock-card:hover {
+            border-color: #444;
+        }
+        .stock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .stock-ticker {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+        .stock-name {
+            font-size: 0.85rem;
+            color: #777;
+        }
+        .recommendation-badge {
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-buy {
+            background: #2a5a2a;
+            color: #6c6;
+        }
+        .badge-nobuy {
+            background: #5a2a2a;
+            color: #c66;
+        }
+        .badge-hold {
+            background: #5a5a2a;
+            color: #cc6;
+        }
+        .allocation-pct {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #e0e0e0;
+            margin: 10px 0;
+        }
+        .conviction {
+            font-size: 0.85rem;
+            color: #777;
+            margin-bottom: 15px;
+        }
+        .conviction-bar {
+            height: 6px;
+            background: #2a2a2a;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .conviction-fill {
+            height: 100%;
+            background: #666;
+            border-radius: 3px;
+        }
+        .stock-details {
+            font-size: 0.85rem;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .detail-label {
+            color: #777;
+        }
+        .risks-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #2a2a2a;
+        }
+        .risks-title {
+            font-size: 0.85rem;
+            color: #a44;
+            margin-bottom: 8px;
+        }
+        .risk-item {
+            font-size: 0.8rem;
+            color: #999;
+            padding-left: 15px;
+            position: relative;
+            margin-bottom: 5px;
+        }
+        .risk-item::before {
+            content: "!";
+            position: absolute;
+            left: 0;
+            color: #a44;
+            font-weight: bold;
+        }
+        .justification {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #4a4;
+        }
+
+        .history-section {
+            background: #141414;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #2a2a2a;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .history-table th {
+            text-align: left;
+            padding: 12px;
+            background: #0a0a0a;
+            color: #777;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+        .history-table td {
+            padding: 12px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .history-table tr:hover {
+            background: #1a1a1a;
+        }
+
+        .category-section {
+            margin-bottom: 40px;
+        }
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background: #2a2a2a;
+        }
+        .cat-ai { background: #2a2a2a; }
+        .cat-energy { background: #2a2a2a; }
+        .cat-storage { background: #2a2a2a; }
+        .cat-bigtech { background: #2a2a2a; }
+        .cat-cyber { background: #2a2a2a; }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #555;
+            font-size: 0.85rem;
+            border-top: 1px solid #2a2a2a;
+            margin-top: 40px;
+        }
+        footer a {
+            color: #e0e0e0;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Claude Alpha</h1>
+            <p class="timestamp">Last Updated: <span id="lastUpdate"></span></p>
+            <p class="timestamp">Next Update: Daily at market close</p>
+        </header>
+
+        <div class="summary-cards">
+            <div class="summary-card">
+                <h3>Total Stocks Analyzed</h3>
+                <div class="value" id="totalStocks">18</div>
+            </div>
+            <div class="summary-card">
+                <h3>Buy Recommendations</h3>
+                <div class="value buy-count" id="buyCount">13</div>
+            </div>
+            <div class="summary-card">
+                <h3>No Buy</h3>
+                <div class="value nobuy-count" id="noBuyCount">5</div>
+            </div>
+            <div class="summary-card">
+                <h3>Avg Conviction</h3>
+                <div class="value" id="avgConviction">7.5/10</div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Portfolio Allocation (100%)</h2>
+        <div class="portfolio-allocation">
+            <div class="allocation-bar" id="allocationBar"></div>
+            <div id="allocationLegend" style="display: flex; flex-wrap: wrap; gap: 15px; font-size: 0.85rem;"></div>
+        </div>
+
+        <h2 class="section-title">30-Day Recommendation History</h2>
+        <div class="history-section">
+            <div class="chart-container">
+                <canvas id="historyChart"></canvas>
+            </div>
+        </div>
+
+        <div id="recommendations"></div>
+
+        <h2 class="section-title">Historical Data Log</h2>
+        <div class="history-section">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Total Buy</th>
+                        <th>Changes</th>
+                        <th>Top Picks</th>
+                    </tr>
+                </thead>
+                <tbody id="historyLog"></tbody>
+            </table>
+        </div>
+
+        <footer>
+            <p>Generated by Claude AI</p>
+            <p>Data refreshes daily. History retained 30 days.</p>
+            <p style="margin-top: 10px; color: #a44; font-size: 0.75rem;">
+                Not financial advice.
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Load recommendations from JSON file
+        // For local file:// access, data is embedded below
+        // For server deployment, uncomment fetch() and remove embedded data
+
+        /*
+        // Server deployment version - uncomment this block
+        async function loadData() {
+            try {
+                const response = await fetch('data/recommendations.json');
+                const jsonData = await response.json();
+                return {
+                    timestamp: jsonData.metadata.lastUpdated,
+                    recommendations: jsonData.recommendations
+                };
+            } catch (error) {
+                console.error('Error loading data:', error);
+                return null;
+            }
+        }
+        */
+
+        // Current recommendations data - UPDATE THIS DAILY (or use JSON file)
+        const currentData = {
+            timestamp: "2026-02-03T16:00:00Z",
+            recommendations: [
+                // AI Infrastructure
+                {
+                    ticker: "NVDA",
+                    name: "Nvidia Corporation",
+                    category: "AI Infrastructure",
+                    recommendation: "BUY",
+                    allocation: 15,
+                    conviction: 8,
+                    priceTarget: "$256-352",
+                    currentPrice: "$179.30",
+                    upside: "42-96%",
+                    risks: [
+                        "Competition from AMD MI400, hyperscaler custom chips",
+                        "China export restrictions ($8B+ quarterly impact)",
+                        "Insider selling pattern ($150M in 90 days)"
+                    ],
+                    justification: "PEG ratio 0.73 suggests undervaluation; Blackwell/Rubin cycle; 92% analyst buy ratings"
+                },
+                {
+                    ticker: "AVGO",
+                    name: "Broadcom Inc",
+                    category: "AI Infrastructure",
+                    recommendation: "BUY",
+                    allocation: 12,
+                    conviction: 8,
+                    priceTarget: "$423-458",
+                    currentPrice: "$317",
+                    upside: "33-44%",
+                    risks: [
+                        "Customer concentration (Google, OpenAI, Anthropic)",
+                        "VMware market share erosion (70% to 40% by 2029)",
+                        "Margin compression as AI mix increases"
+                    ],
+                    justification: "$73B AI backlog; deals with all major AI players; 31x forward P/E with 52% growth"
+                },
+                {
+                    ticker: "MU",
+                    name: "Micron Technology",
+                    category: "AI Infrastructure",
+                    recommendation: "NO BUY",
+                    allocation: 0,
+                    conviction: 7,
+                    priceTarget: "$320-370",
+                    currentPrice: "$437",
+                    upside: "-18% to -15%",
+                    risks: [
+                        "Trading 18-37% ABOVE analyst targets",
+                        "Up 300% in 6 months - priced for perfection",
+                        "Cyclical peak risk with $20B capex",
+                        "147% above 200-day moving average"
+                    ],
+                    justification: "Excellent company but terrible entry point. Wait for pullback to $350-400 range."
+                },
+                {
+                    ticker: "MRVL",
+                    name: "Marvell Technology",
+                    category: "AI Infrastructure",
+                    recommendation: "BUY",
+                    allocation: 5,
+                    conviction: 7,
+                    priceTarget: "$110-130",
+                    currentPrice: "$76",
+                    upside: "45-71%",
+                    risks: [
+                        "Customer concentration (AWS, Microsoft)",
+                        "Potential Trainium 3/4 design losses to Alchip",
+                        "Still GAAP unprofitable"
+                    ],
+                    justification: "35% below 52-week high; PEG 0.79; $75B design pipeline; management disputes customer loss claims"
+                },
+                // Big Tech AI
+                {
+                    ticker: "META",
+                    name: "Meta Platforms",
+                    category: "Big Tech AI",
+                    recommendation: "BUY",
+                    allocation: 12,
+                    conviction: 7,
+                    priceTarget: "$825-850",
+                    currentPrice: "$706",
+                    upside: "17-20%",
+                    risks: [
+                        "$115-135B capex in 2026 with uncertain AI ROI",
+                        "Reality Labs losing $19B annually",
+                        "FTC appeal ongoing; regulatory overhang"
+                    ],
+                    justification: "Cheapest Mag-7 at 28x P/E; $200B revenue growing 22%; Advantage+ at $60B run rate"
+                },
+                {
+                    ticker: "AMZN",
+                    name: "Amazon.com",
+                    category: "Big Tech AI",
+                    recommendation: "BUY",
+                    allocation: 10,
+                    conviction: 8,
+                    priceTarget: "$290-300",
+                    currentPrice: "$238",
+                    upside: "22-26%",
+                    risks: [
+                        "AWS losing share to Azure (growing 2x faster)",
+                        "$140B+ capex with uncertain ROI",
+                        "Free cash flow down 69%"
+                    ],
+                    justification: "P/E 68% below 10-year average; AWS reaccelerating at 20.2%; AI revenue doubling to $17B"
+                },
+                {
+                    ticker: "MSFT",
+                    name: "Microsoft Corporation",
+                    category: "Big Tech AI",
+                    recommendation: "BUY",
+                    allocation: 8,
+                    conviction: 8,
+                    priceTarget: "$550-600",
+                    currentPrice: "$426",
+                    upside: "29-41%",
+                    risks: [
+                        "Azure growth decelerating (40% to 37-38%)",
+                        "$37.5B quarterly capex",
+                        "OpenAI concentration (45% of RPO)"
+                    ],
+                    justification: "Cheapest Mag-7 on forward P/E; 22% below ATH post-selloff; $625B backlog"
+                },
+                // Cybersecurity
+                {
+                    ticker: "CRWD",
+                    name: "CrowdStrike Holdings",
+                    category: "Cybersecurity",
+                    recommendation: "BUY",
+                    allocation: 6,
+                    conviction: 7,
+                    priceTarget: "$550-562",
+                    currentPrice: "$417",
+                    upside: "32-35%",
+                    risks: [
+                        "Valuation at 24-26x sales still premium",
+                        "Growth decelerating from 31% to 21%",
+                        "Delta $500M lawsuit pending"
+                    ],
+                    justification: "97% retention post-outage proves stickiness; Next-Gen SIEM growing 95% YoY; 20% off highs"
+                },
+                {
+                    ticker: "PANW",
+                    name: "Palo Alto Networks",
+                    category: "Cybersecurity",
+                    recommendation: "BUY",
+                    allocation: 5,
+                    conviction: 7,
+                    priceTarget: "$227-231",
+                    currentPrice: "$176",
+                    upside: "29-31%",
+                    risks: [
+                        "$25B CyberArk deal adds significant debt",
+                        "Growth decelerated to 14-15%",
+                        "Founder/CTO departed Aug 2025"
+                    ],
+                    justification: "Trades at half of CrowdStrike's valuation; platformization validated; 69% FCF margin"
+                },
+                // AI Energy
+                {
+                    ticker: "VST",
+                    name: "Vistra Corp",
+                    category: "AI Energy",
+                    recommendation: "BUY",
+                    allocation: 8,
+                    conviction: 8,
+                    priceTarget: "$237",
+                    currentPrice: "$160",
+                    upside: "48%",
+                    risks: [
+                        "Regulatory risk from policy responses to tech energy use",
+                        "Concentrated hyperscaler customer base"
+                    ],
+                    justification: "20-year Meta nuclear deal for 2,600MW; existing nuclear fleet is cheapest power"
+                },
+                {
+                    ticker: "TLN",
+                    name: "Talen Energy",
+                    category: "AI Energy",
+                    recommendation: "BUY",
+                    allocation: 5,
+                    conviction: 7,
+                    priceTarget: "$449",
+                    currentPrice: "$350",
+                    upside: "28%",
+                    risks: [
+                        "Concentrated AWS dependency",
+                        "Nuclear regulatory requirements"
+                    ],
+                    justification: "AWS deal through 2042 for 1,920MW nuclear power; EPS projected +300% in 2026"
+                },
+                {
+                    ticker: "CCJ",
+                    name: "Cameco Corporation",
+                    category: "AI Energy",
+                    recommendation: "BUY",
+                    allocation: 4,
+                    conviction: 7,
+                    priceTarget: "$110-115",
+                    currentPrice: "$85",
+                    upside: "29-35%",
+                    risks: [
+                        "Uranium price volatility",
+                        "Geopolitical supply chain risks"
+                    ],
+                    justification: "#2 uranium producer globally; $80B govt nuclear pact; 47% EPS growth in 2026"
+                },
+                {
+                    ticker: "VRT",
+                    name: "Vertiv Holdings",
+                    category: "AI Energy",
+                    recommendation: "BUY",
+                    allocation: 5,
+                    conviction: 8,
+                    priceTarget: "$190-208",
+                    currentPrice: "$165",
+                    upside: "15-26%",
+                    risks: [
+                        "Competition in data center infrastructure",
+                        "Supply chain constraints"
+                    ],
+                    justification: "$9.5B backlog; 60% order growth YoY; critical power infrastructure for AI"
+                },
+                // Storage
+                {
+                    ticker: "STX",
+                    name: "Seagate Technology",
+                    category: "AI Storage",
+                    recommendation: "BUY",
+                    allocation: 5,
+                    conviction: 7,
+                    priceTarget: "$400-450",
+                    currentPrice: "$350",
+                    upside: "14-29%",
+                    risks: [
+                        "SSD crossover risk long-term",
+                        "Premium P/E of 30x",
+                        "Cyclical memory exposure"
+                    ],
+                    justification: "HAMR technology leader (years ahead of WDC); sold out through 2027-28; 11x 2026 earnings"
+                },
+                // NO BUY Recommendations
+                {
+                    ticker: "ORCL",
+                    name: "Oracle Corporation",
+                    category: "Enterprise Software",
+                    recommendation: "NO BUY",
+                    allocation: 0,
+                    conviction: 7,
+                    priceTarget: "$297-312",
+                    currentPrice: "$160",
+                    upside: "85% but...",
+                    risks: [
+                        "433-500% debt/equity ratio",
+                        "OpenAI $300B deal - counterparty risk",
+                        "Negative FCF projected through 2029",
+                        "Potential junk credit downgrade"
+                    ],
+                    justification: "Balance sheet too risky. OpenAI dependency creates binary outcome. Wait for clarity."
+                },
+                {
+                    ticker: "WDC",
+                    name: "Western Digital",
+                    category: "AI Storage",
+                    recommendation: "NO BUY",
+                    allocation: 0,
+                    conviction: 6,
+                    priceTarget: "$206-250",
+                    currentPrice: "$274",
+                    upside: "-9% to -25%",
+                    risks: [
+                        "Trading above analyst targets after +290% rally",
+                        "HAMR technology behind Seagate",
+                        "SSD crossover risk in 2026"
+                    ],
+                    justification: "Wait for pullback to $200-220. Prefer STX for HDD exposure."
+                },
+                {
+                    ticker: "CEG",
+                    name: "Constellation Energy",
+                    category: "AI Energy",
+                    recommendation: "NO BUY",
+                    allocation: 0,
+                    conviction: 5,
+                    priceTarget: "$405-406",
+                    currentPrice: "$354",
+                    upside: "14-15%",
+                    risks: [
+                        "Growing hyperscaler customer concentration",
+                        "Regulatory risk from policy responses",
+                        "Limited upside vs peers"
+                    ],
+                    justification: "Prefer VST and TLN for better risk/reward in nuclear space."
+                },
+                {
+                    ticker: "GEV",
+                    name: "GE Vernova",
+                    category: "AI Energy",
+                    recommendation: "NO BUY",
+                    allocation: 0,
+                    conviction: 5,
+                    priceTarget: "$804-816",
+                    currentPrice: "$750",
+                    upside: "7-9%",
+                    risks: [
+                        "Limited upside to targets (only 8%)",
+                        "Already up 102% in past year",
+                        "Execution risk on turbine orders"
+                    ],
+                    justification: "Good company but limited upside at current levels. Already priced in."
+                }
+            ]
+        };
+
+        // Historical data storage (simulate 30 days)
+        const historicalData = JSON.parse(localStorage.getItem('stockHistory') || '[]');
+
+        // Add current data to history if new day
+        function updateHistory() {
+            const today = new Date().toISOString().split('T')[0];
+            const existingEntry = historicalData.find(h => h.date === today);
+
+            if (!existingEntry) {
+                const buyCount = currentData.recommendations.filter(r => r.recommendation === 'BUY').length;
+                const topPicks = currentData.recommendations
+                    .filter(r => r.recommendation === 'BUY')
+                    .sort((a, b) => b.allocation - a.allocation)
+                    .slice(0, 3)
+                    .map(r => r.ticker)
+                    .join(', ');
+
+                historicalData.unshift({
+                    date: today,
+                    timestamp: currentData.timestamp,
+                    buyCount: buyCount,
+                    noBuyCount: currentData.recommendations.length - buyCount,
+                    topPicks: topPicks,
+                    allocations: currentData.recommendations.reduce((acc, r) => {
+                        acc[r.ticker] = r.allocation;
+                        return acc;
+                    }, {})
+                });
+
+                // Keep only 30 days
+                if (historicalData.length > 30) {
+                    historicalData.pop();
+                }
+
+                localStorage.setItem('stockHistory', JSON.stringify(historicalData));
+            }
+        }
+
+        // Render functions
+        function renderSummary() {
+            const buyRecs = currentData.recommendations.filter(r => r.recommendation === 'BUY');
+            const noBuyRecs = currentData.recommendations.filter(r => r.recommendation === 'NO BUY');
+            const avgConviction = (currentData.recommendations.reduce((sum, r) => sum + r.conviction, 0) / currentData.recommendations.length).toFixed(1);
+
+            document.getElementById('totalStocks').textContent = currentData.recommendations.length;
+            document.getElementById('buyCount').textContent = buyRecs.length;
+            document.getElementById('noBuyCount').textContent = noBuyRecs.length;
+            document.getElementById('avgConviction').textContent = avgConviction + '/10';
+            document.getElementById('lastUpdate').textContent = new Date(currentData.timestamp).toLocaleString();
+        }
+
+        function renderAllocationBar() {
+            const buyRecs = currentData.recommendations
+                .filter(r => r.recommendation === 'BUY' && r.allocation > 0)
+                .sort((a, b) => b.allocation - a.allocation);
+
+            const colors = [
+                '#2a6', '#38c', '#c55', '#a5a', '#c82',
+                '#5a8', '#68b', '#b66', '#8a5', '#6a9',
+                '#a68', '#7b5', '#5a6', '#698'
+            ];
+
+            const bar = document.getElementById('allocationBar');
+            const legend = document.getElementById('allocationLegend');
+
+            bar.innerHTML = buyRecs.map((r, i) =>
+                `<a href="#card-${r.ticker}" class="allocation-segment" style="width: ${r.allocation}%; background: ${colors[i % colors.length]}" title="${r.ticker}: ${r.allocation}%">
+                    ${r.allocation >= 5 ? r.ticker : ''}
+                </a>`
+            ).join('');
+
+            legend.innerHTML = buyRecs.map((r, i) =>
+                `<a href="#card-${r.ticker}" style="text-decoration: none; color: inherit; cursor: pointer;"><span style="display: inline-block; width: 12px; height: 12px; background: ${colors[i % colors.length]}; border-radius: 3px; margin-right: 5px;"></span>${r.ticker}: ${r.allocation}%</a>`
+            ).join('');
+        }
+
+        function renderRecommendations() {
+            const container = document.getElementById('recommendations');
+            const categories = [...new Set(currentData.recommendations.map(r => r.category))];
+
+            const categoryIcons = {
+                'AI Infrastructure': { icon: '🤖', class: 'cat-ai' },
+                'Big Tech AI': { icon: '💻', class: 'cat-bigtech' },
+                'Cybersecurity': { icon: '🛡️', class: 'cat-cyber' },
+                'AI Energy': { icon: '⚡', class: 'cat-energy' },
+                'AI Storage': { icon: '💾', class: 'cat-storage' },
+                'Enterprise Software': { icon: '📊', class: 'cat-bigtech' }
+            };
+
+            container.innerHTML = categories.map(category => {
+                const catInfo = categoryIcons[category] || { icon: '📈', class: 'cat-ai' };
+                const stocks = currentData.recommendations.filter(r => r.category === category);
+
+                return `
+                    <div class="category-section">
+                        <div class="category-header">
+                            <div class="category-icon ${catInfo.class}">${catInfo.icon}</div>
+                            <h2 class="section-title" style="margin: 0; border: none;">${category}</h2>
+                        </div>
+                        <div class="recommendations-grid">
+                            ${stocks.map(stock => `
+                                <div class="stock-card" id="card-${stock.ticker}">
+                                    <div class="stock-header">
+                                        <div>
+                                            <div class="stock-ticker">${stock.ticker}</div>
+                                            <div class="stock-name">${stock.name}</div>
+                                        </div>
+                                        <span class="recommendation-badge badge-${stock.recommendation.toLowerCase().replace(' ', '')}">${stock.recommendation}</span>
+                                    </div>
+                                    <div class="allocation-pct">${stock.allocation}%</div>
+                                    <div class="conviction">
+                                        Conviction: ${stock.conviction}/10
+                                        <div class="conviction-bar">
+                                            <div class="conviction-fill" style="width: ${stock.conviction * 10}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="stock-details">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Current Price</span>
+                                            <span>${stock.currentPrice}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Price Target</span>
+                                            <span>${stock.priceTarget}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Upside</span>
+                                            <span style="color: ${stock.upside.includes('-') ? '#ff4466' : '#00ff88'}">${stock.upside}</span>
+                                        </div>
+                                    </div>
+                                    <div class="risks-section">
+                                        <div class="risks-title">Key Risks</div>
+                                        ${stock.risks.map(risk => `<div class="risk-item">${risk}</div>`).join('')}
+                                    </div>
+                                    <div class="justification">✓ ${stock.justification}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderHistoryChart() {
+            const ctx = document.getElementById('historyChart').getContext('2d');
+
+            // Generate sample historical data if not enough
+            let chartData = historicalData.slice(0, 30);
+            if (chartData.length < 7) {
+                // Add sample data for visualization
+                const sampleDates = [];
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    sampleDates.push({
+                        date: date.toISOString().split('T')[0],
+                        buyCount: 13 + Math.floor(Math.random() * 2),
+                        noBuyCount: 5 - Math.floor(Math.random() * 2)
+                    });
+                }
+                chartData = sampleDates;
+            }
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.map(d => d.date).reverse(),
+                    datasets: [
+                        {
+                            label: 'Buy Recommendations',
+                            data: chartData.map(d => d.buyCount).reverse(),
+                            borderColor: '#4a4',
+                            backgroundColor: 'rgba(68, 170, 68, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'No Buy',
+                            data: chartData.map(d => d.noBuyCount).reverse(),
+                            borderColor: '#a44',
+                            backgroundColor: 'rgba(170, 68, 68, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#777' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#777' },
+                            grid: { color: '#2a2a2a' }
+                        },
+                        y: {
+                            ticks: { color: '#777' },
+                            grid: { color: '#2a2a2a' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderHistoryLog() {
+            const tbody = document.getElementById('historyLog');
+            let logData = historicalData.slice(0, 10);
+
+            if (logData.length === 0) {
+                logData = [{
+                    date: new Date().toISOString().split('T')[0],
+                    buyCount: 13,
+                    noBuyCount: 5,
+                    topPicks: 'NVDA, AVGO, META'
+                }];
+            }
+
+            tbody.innerHTML = logData.map((entry, i) => `
+                <tr>
+                    <td>${entry.date}</td>
+                    <td><span class="buy-count">${entry.buyCount}</span></td>
+                    <td>${i === 0 ? 'Current' : (entry.buyCount !== logData[i-1]?.buyCount ? '↑↓ Changed' : 'No change')}</td>
+                    <td>${entry.topPicks || 'NVDA, AVGO, META'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Initialize
+        updateHistory();
+        renderSummary();
+        renderAllocationBar();
+        renderRecommendations();
+        renderHistoryChart();
+        renderHistoryLog();
+    </script>
+</body>
+</html>

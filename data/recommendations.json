@@ -1,0 +1,328 @@
+{
+  "metadata": {
+    "lastUpdated": "2026-02-03T16:00:00Z",
+    "generatedBy": "Claude AI",
+    "version": "1.0",
+    "totalAllocation": 100
+  },
+  "summary": {
+    "totalStocks": 18,
+    "buyCount": 13,
+    "noBuyCount": 5,
+    "averageConviction": 7.2,
+    "topPicks": ["NVDA", "AVGO", "META"]
+  },
+  "portfolio": {
+    "AI Infrastructure": 32,
+    "Big Tech AI": 30,
+    "AI Energy": 22,
+    "Cybersecurity": 11,
+    "AI Storage": 5
+  },
+  "recommendations": [
+    {
+      "ticker": "NVDA",
+      "name": "Nvidia Corporation",
+      "category": "AI Infrastructure",
+      "recommendation": "BUY",
+      "allocation": 15,
+      "conviction": 8,
+      "currentPrice": "$179.30",
+      "priceTarget": "$256-352",
+      "upside": "42-96%",
+      "risks": [
+        "Competition from AMD MI400, hyperscaler custom chips",
+        "China export restrictions ($8B+ quarterly impact)",
+        "Insider selling pattern ($150M in 90 days)"
+      ],
+      "justification": "PEG ratio 0.73 suggests undervaluation; Blackwell/Rubin cycle; 92% analyst buy ratings"
+    },
+    {
+      "ticker": "AVGO",
+      "name": "Broadcom Inc",
+      "category": "AI Infrastructure",
+      "recommendation": "BUY",
+      "allocation": 12,
+      "conviction": 8,
+      "currentPrice": "$317",
+      "priceTarget": "$423-458",
+      "upside": "33-44%",
+      "risks": [
+        "Customer concentration (Google, OpenAI, Anthropic)",
+        "VMware market share erosion (70% to 40% by 2029)",
+        "Margin compression as AI mix increases"
+      ],
+      "justification": "$73B AI backlog; deals with all major AI players; 31x forward P/E with 52% growth"
+    },
+    {
+      "ticker": "MU",
+      "name": "Micron Technology",
+      "category": "AI Infrastructure",
+      "recommendation": "NO BUY",
+      "allocation": 0,
+      "conviction": 7,
+      "currentPrice": "$437",
+      "priceTarget": "$320-370",
+      "upside": "-18% to -15%",
+      "risks": [
+        "Trading 18-37% ABOVE analyst targets",
+        "Up 300% in 6 months - priced for perfection",
+        "Cyclical peak risk with $20B capex",
+        "147% above 200-day moving average"
+      ],
+      "justification": "Excellent company but terrible entry point. Wait for pullback to $350-400 range."
+    },
+    {
+      "ticker": "MRVL",
+      "name": "Marvell Technology",
+      "category": "AI Infrastructure",
+      "recommendation": "BUY",
+      "allocation": 5,
+      "conviction": 7,
+      "currentPrice": "$76",
+      "priceTarget": "$110-130",
+      "upside": "45-71%",
+      "risks": [
+        "Customer concentration (AWS, Microsoft)",
+        "Potential Trainium 3/4 design losses to Alchip",
+        "Still GAAP unprofitable"
+      ],
+      "justification": "35% below 52-week high; PEG 0.79; $75B design pipeline; management disputes customer loss claims"
+    },
+    {
+      "ticker": "META",
+      "name": "Meta Platforms",
+      "category": "Big Tech AI",
+      "recommendation": "BUY",
+      "allocation": 12,
+      "conviction": 7,
+      "currentPrice": "$706",
+      "priceTarget": "$825-850",
+      "upside": "17-20%",
+      "risks": [
+        "$115-135B capex in 2026 with uncertain AI ROI",
+        "Reality Labs losing $19B annually",
+        "FTC appeal ongoing; regulatory overhang"
+      ],
+      "justification": "Cheapest Mag-7 at 28x P/E; $200B revenue growing 22%; Advantage+ at $60B run rate"
+    },
+    {
+      "ticker": "AMZN",
+      "name": "Amazon.com",
+      "category": "Big Tech AI",
+      "recommendation": "BUY",
+      "allocation": 10,
+      "conviction": 8,
+      "currentPrice": "$238",
+      "priceTarget": "$290-300",
+      "upside": "22-26%",
+      "risks": [
+        "AWS losing share to Azure (growing 2x faster)",
+        "$140B+ capex with uncertain ROI",
+        "Free cash flow down 69%"
+      ],
+      "justification": "P/E 68% below 10-year average; AWS reaccelerating at 20.2%; AI revenue doubling to $17B"
+    },
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft Corporation",
+      "category": "Big Tech AI",
+      "recommendation": "BUY",
+      "allocation": 8,
+      "conviction": 8,
+      "currentPrice": "$426",
+      "priceTarget": "$550-600",
+      "upside": "29-41%",
+      "risks": [
+        "Azure growth decelerating (40% to 37-38%)",
+        "$37.5B quarterly capex",
+        "OpenAI concentration (45% of RPO)"
+      ],
+      "justification": "Cheapest Mag-7 on forward P/E; 22% below ATH post-selloff; $625B backlog"
+    },
+    {
+      "ticker": "CRWD",
+      "name": "CrowdStrike Holdings",
+      "category": "Cybersecurity",
+      "recommendation": "BUY",
+      "allocation": 6,
+      "conviction": 7,
+      "currentPrice": "$417",
+      "priceTarget": "$550-562",
+      "upside": "32-35%",
+      "risks": [
+        "Valuation at 24-26x sales still premium",
+        "Growth decelerating from 31% to 21%",
+        "Delta $500M lawsuit pending"
+      ],
+      "justification": "97% retention post-outage proves stickiness; Next-Gen SIEM growing 95% YoY; 20% off highs"
+    },
+    {
+      "ticker": "PANW",
+      "name": "Palo Alto Networks",
+      "category": "Cybersecurity",
+      "recommendation": "BUY",
+      "allocation": 5,
+      "conviction": 7,
+      "currentPrice": "$176",
+      "priceTarget": "$227-231",
+      "upside": "29-31%",
+      "risks": [
+        "$25B CyberArk deal adds significant debt",
+        "Growth decelerated to 14-15%",
+        "Founder/CTO departed Aug 2025"
+      ],
+      "justification": "Trades at half of CrowdStrike's valuation; platformization validated; 69% FCF margin"
+    },
+    {
+      "ticker": "VST",
+      "name": "Vistra Corp",
+      "category": "AI Energy",
+      "recommendation": "BUY",
+      "allocation": 8,
+      "conviction": 8,
+      "currentPrice": "$160",
+      "priceTarget": "$237",
+      "upside": "48%",
+      "risks": [
+        "Regulatory risk from policy responses to tech energy use",
+        "Concentrated hyperscaler customer base"
+      ],
+      "justification": "20-year Meta nuclear deal for 2,600MW; existing nuclear fleet is cheapest power"
+    },
+    {
+      "ticker": "TLN",
+      "name": "Talen Energy",
+      "category": "AI Energy",
+      "recommendation": "BUY",
+      "allocation": 5,
+      "conviction": 7,
+      "currentPrice": "$350",
+      "priceTarget": "$449",
+      "upside": "28%",
+      "risks": [
+        "Concentrated AWS dependency",
+        "Nuclear regulatory requirements"
+      ],
+      "justification": "AWS deal through 2042 for 1,920MW nuclear power; EPS projected +300% in 2026"
+    },
+    {
+      "ticker": "CCJ",
+      "name": "Cameco Corporation",
+      "category": "AI Energy",
+      "recommendation": "BUY",
+      "allocation": 4,
+      "conviction": 7,
+      "currentPrice": "$85",
+      "priceTarget": "$110-115",
+      "upside": "29-35%",
+      "risks": [
+        "Uranium price volatility",
+        "Geopolitical supply chain risks"
+      ],
+      "justification": "#2 uranium producer globally; $80B govt nuclear pact; 47% EPS growth in 2026"
+    },
+    {
+      "ticker": "VRT",
+      "name": "Vertiv Holdings",
+      "category": "AI Energy",
+      "recommendation": "BUY",
+      "allocation": 5,
+      "conviction": 8,
+      "currentPrice": "$165",
+      "priceTarget": "$190-208",
+      "upside": "15-26%",
+      "risks": [
+        "Competition in data center infrastructure",
+        "Supply chain constraints"
+      ],
+      "justification": "$9.5B backlog; 60% order growth YoY; critical power infrastructure for AI"
+    },
+    {
+      "ticker": "STX",
+      "name": "Seagate Technology",
+      "category": "AI Storage",
+      "recommendation": "BUY",
+      "allocation": 5,
+      "conviction": 7,
+      "currentPrice": "$350",
+      "priceTarget": "$400-450",
+      "upside": "14-29%",
+      "risks": [
+        "SSD crossover risk long-term",
+        "Premium P/E of 30x",
+        "Cyclical memory exposure"
+      ],
+      "justification": "HAMR technology leader (years ahead of WDC); sold out through 2027-28; 11x 2026 earnings"
+    },
+    {
+      "ticker": "ORCL",
+      "name": "Oracle Corporation",
+      "category": "Enterprise Software",
+      "recommendation": "NO BUY",
+      "allocation": 0,
+      "conviction": 7,
+      "currentPrice": "$160",
+      "priceTarget": "$297-312",
+      "upside": "85% but high risk",
+      "risks": [
+        "433-500% debt/equity ratio",
+        "OpenAI $300B deal - counterparty risk",
+        "Negative FCF projected through 2029",
+        "Potential junk credit downgrade"
+      ],
+      "justification": "Balance sheet too risky. OpenAI dependency creates binary outcome. Wait for clarity."
+    },
+    {
+      "ticker": "WDC",
+      "name": "Western Digital",
+      "category": "AI Storage",
+      "recommendation": "NO BUY",
+      "allocation": 0,
+      "conviction": 6,
+      "currentPrice": "$274",
+      "priceTarget": "$206-250",
+      "upside": "-9% to -25%",
+      "risks": [
+        "Trading above analyst targets after +290% rally",
+        "HAMR technology behind Seagate",
+        "SSD crossover risk in 2026"
+      ],
+      "justification": "Wait for pullback to $200-220. Prefer STX for HDD exposure."
+    },
+    {
+      "ticker": "CEG",
+      "name": "Constellation Energy",
+      "category": "AI Energy",
+      "recommendation": "NO BUY",
+      "allocation": 0,
+      "conviction": 5,
+      "currentPrice": "$354",
+      "priceTarget": "$405-406",
+      "upside": "14-15%",
+      "risks": [
+        "Growing hyperscaler customer concentration",
+        "Regulatory risk from policy responses",
+        "Limited upside vs peers"
+      ],
+      "justification": "Prefer VST and TLN for better risk/reward in nuclear space."
+    },
+    {
+      "ticker": "GEV",
+      "name": "GE Vernova",
+      "category": "AI Energy",
+      "recommendation": "NO BUY",
+      "allocation": 0,
+      "conviction": 5,
+      "currentPrice": "$750",
+      "priceTarget": "$804-816",
+      "upside": "7-9%",
+      "risks": [
+        "Limited upside to targets (only 8%)",
+        "Already up 102% in past year",
+        "Execution risk on turbine orders"
+      ],
+      "justification": "Good company but limited upside at current levels. Already priced in."
+    }
+  ]
+}
