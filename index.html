@@ -118,47 +118,55 @@
         html {
             scroll-behavior: smooth;
         }
-        .stock-card:target {
-            outline: 2px solid #4a4;
-            outline-offset: 4px;
+        tr:target {
+            background: #1a2a1a !important;
         }
 
-        .recommendations-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 12px;
+        .recommendations-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
             margin-bottom: 30px;
         }
-        .stock-card {
-            background: #141414;
-            border-radius: 6px;
-            padding: 12px 14px;
-            border: 1px solid #2a2a2a;
+        .recommendations-table th {
+            text-align: left;
+            padding: 12px 10px;
+            background: #0a0a0a;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            border-bottom: 1px solid #2a2a2a;
+            position: sticky;
+            top: 0;
         }
-        .stock-card:hover {
-            border-color: #444;
+        .recommendations-table td {
+            padding: 10px;
+            border-bottom: 1px solid #1a1a1a;
+            vertical-align: middle;
         }
-        .stock-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
+        .recommendations-table tr:hover {
+            background: #1a1a1a;
+        }
+        .recommendations-table tr:target {
+            background: #1a2a1a;
         }
         .stock-ticker {
-            font-size: 1.2rem;
             font-weight: bold;
             color: #e0e0e0;
+            font-size: 1rem;
         }
         .stock-name {
             font-size: 0.7rem;
-            color: #666;
+            color: #555;
         }
         .recommendation-badge {
-            padding: 3px 10px;
+            padding: 4px 10px;
             border-radius: 3px;
             font-size: 0.7rem;
             font-weight: bold;
             text-transform: uppercase;
+            display: inline-block;
         }
         .badge-buy {
             background: #2a5a2a;
@@ -172,85 +180,45 @@
             background: #5a5a2a;
             color: #cc6;
         }
-        .card-metrics {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
         .allocation-pct {
-            font-size: 1.4rem;
             font-weight: bold;
             color: #e0e0e0;
+            font-size: 1.1rem;
         }
-        .conviction {
-            font-size: 0.7rem;
-            color: #666;
-            text-align: right;
+        .conviction-cell {
+            color: #888;
         }
-        .conviction-bar {
-            height: 4px;
-            width: 60px;
-            background: #2a2a2a;
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 3px;
-            margin-left: auto;
-        }
-        .conviction-fill {
-            height: 100%;
-            background: #666;
-            border-radius: 2px;
-        }
-        .stock-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 4px;
-            font-size: 0.7rem;
-            background: #0a0a0a;
-            border-radius: 4px;
-            padding: 8px;
-            margin-bottom: 8px;
-        }
-        .detail-item {
-            text-align: center;
-        }
-        .detail-label {
-            color: #555;
-            font-size: 0.6rem;
-            text-transform: uppercase;
-        }
-        .detail-value {
+        .price-cell {
             color: #e0e0e0;
+        }
+        .target-cell {
+            color: #888;
+        }
+        .upside-positive {
+            color: #4a4;
             font-weight: 500;
         }
-        .detail-value.positive { color: #4a4; }
-        .detail-value.negative { color: #a44; }
-        .risks-section {
-            border-top: 1px solid #2a2a2a;
-            padding-top: 8px;
-        }
-        .risks-row {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .risk-tag {
-            font-size: 0.6rem;
+        .upside-negative {
             color: #a44;
-            background: rgba(170,68,68,0.15);
-            padding: 2px 6px;
-            border-radius: 3px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 140px;
+            font-weight: 500;
         }
-        .justification {
-            margin-top: 6px;
-            font-size: 0.7rem;
+        .justification-cell {
+            font-size: 0.75rem;
             color: #4a4;
-            line-height: 1.4;
+            max-width: 300px;
+        }
+        .risks-cell {
+            font-size: 0.7rem;
+            color: #a44;
+            max-width: 200px;
+        }
+        .table-section {
+            background: #141414;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+            border: 1px solid #2a2a2a;
+            overflow-x: auto;
         }
 
         .history-section {
@@ -843,47 +811,38 @@
                             <div class="category-icon ${catInfo.class}">${catInfo.icon}</div>
                             <h2 class="section-title" style="margin: 0; border: none;">${category}</h2>
                         </div>
-                        <div class="recommendations-grid">
-                            ${stocks.map(stock => `
-                                <div class="stock-card" id="card-${stock.ticker}">
-                                    <div class="stock-header">
-                                        <div>
-                                            <div class="stock-ticker">${stock.ticker}</div>
-                                            <div class="stock-name">${stock.name}</div>
-                                        </div>
-                                        <span class="recommendation-badge badge-${stock.recommendation.toLowerCase().replace(' ', '')}">${stock.recommendation}</span>
-                                    </div>
-                                    <div class="card-metrics">
-                                        <div class="allocation-pct">${stock.allocation}%</div>
-                                        <div class="conviction">
-                                            ${stock.conviction}/10
-                                            <div class="conviction-bar">
-                                                <div class="conviction-fill" style="width: ${stock.conviction * 10}%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="stock-details">
-                                        <div class="detail-item">
-                                            <div class="detail-label">Price</div>
-                                            <div class="detail-value">${stock.currentPrice}</div>
-                                        </div>
-                                        <div class="detail-item">
-                                            <div class="detail-label">Target</div>
-                                            <div class="detail-value">${stock.priceTarget}</div>
-                                        </div>
-                                        <div class="detail-item">
-                                            <div class="detail-label">Upside</div>
-                                            <div class="detail-value ${stock.upside.includes('-') ? 'negative' : 'positive'}">${stock.upside}</div>
-                                        </div>
-                                    </div>
-                                    <div class="risks-section">
-                                        <div class="risks-row">
-                                            ${stock.risks.slice(0,3).map(risk => `<span class="risk-tag" title="${risk}">${risk.split(' ').slice(0,4).join(' ')}...</span>`).join('')}
-                                        </div>
-                                    </div>
-                                    <div class="justification">✓ ${stock.justification}</div>
-                                </div>
-                            `).join('')}
+                        <div class="table-section">
+                            <table class="recommendations-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticker</th>
+                                        <th>Signal</th>
+                                        <th>Alloc</th>
+                                        <th>Price</th>
+                                        <th>Target</th>
+                                        <th>Upside</th>
+                                        <th>Conv</th>
+                                        <th>Rationale</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${stocks.map(stock => `
+                                        <tr id="card-${stock.ticker}">
+                                            <td>
+                                                <div class="stock-ticker">${stock.ticker}</div>
+                                                <div class="stock-name">${stock.name}</div>
+                                            </td>
+                                            <td><span class="recommendation-badge badge-${stock.recommendation.toLowerCase().replace(' ', '')}">${stock.recommendation}</span></td>
+                                            <td class="allocation-pct">${stock.allocation}%</td>
+                                            <td class="price-cell">${stock.currentPrice}</td>
+                                            <td class="target-cell">${stock.priceTarget}</td>
+                                            <td class="${stock.upside.includes('-') ? 'upside-negative' : 'upside-positive'}">${stock.upside}</td>
+                                            <td class="conviction-cell">${stock.conviction}/10</td>
+                                            <td class="justification-cell">${stock.justification}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 `;
