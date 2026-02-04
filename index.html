@@ -180,6 +180,43 @@
             background: #5a5a2a;
             color: #cc6;
         }
+        .wsb-cell {
+            font-size: 0.75rem;
+        }
+        .wsb-sentiment {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .wsb-bullish {
+            background: #2a4a2a;
+            color: #6c6;
+        }
+        .wsb-bearish {
+            background: #4a2a2a;
+            color: #c66;
+        }
+        .wsb-mixed {
+            background: #4a4a2a;
+            color: #cc6;
+        }
+        .wsb-none {
+            background: #2a2a2a;
+            color: #666;
+        }
+        .wsb-trending {
+            display: inline-block;
+            margin-left: 4px;
+            color: #f90;
+            font-size: 0.7rem;
+        }
+        .wsb-mentions {
+            font-size: 0.65rem;
+            color: #888;
+        }
         .allocation-pct {
             font-weight: bold;
             color: #e0e0e0;
@@ -410,6 +447,10 @@
                     priceTarget: "$253-352",
                     currentPrice: "$179.30",
                     upside: "41-96%",
+                    wsbMentions: "high",
+                    wsbSentiment: "bullish",
+                    wsbTrending: true,
+                    wsbNote: "Perennial WSB favorite; frequent DD posts on AI demand",
                     risks: [
                         "China export restrictions ($9B revenue at risk)",
                         "Hyperscaler custom silicon competition (TPUs, Trainium)",
@@ -427,6 +468,9 @@
                     priceTarget: "$423-475",
                     currentPrice: "$310",
                     upside: "37-53%",
+                    wsbMentions: "medium",
+                    wsbSentiment: "bullish",
+                    wsbTrending: false,
                     risks: [
                         "VMware customer backlash (100%+ price hikes)",
                         "Customer concentration (Google, Meta, ByteDance, OpenAI)",
@@ -444,6 +488,9 @@
                     priceTarget: "$110-150",
                     currentPrice: "$74",
                     upside: "49-103%",
+                    wsbMentions: "medium",
+                    wsbSentiment: "bullish",
+                    wsbTrending: false,
                     risks: [
                         "Customer concentration (AWS, Microsoft)",
                         "Unconfirmed reports of Trainium 3/4 losses to Alchip",
@@ -461,6 +508,9 @@
                     priceTarget: "$187-275",
                     currentPrice: "$157",
                     upside: "19-75%",
+                    wsbMentions: "low",
+                    wsbSentiment: "bullish",
+                    wsbTrending: false,
                     risks: [
                         "Premium valuation (35-42x P/S vs 5.6x industry)",
                         "Competition from Broadcom, Marvell intensifying",
@@ -479,6 +529,10 @@
                     priceTarget: "$822-859",
                     currentPrice: "$706",
                     upside: "16-22%",
+                    wsbMentions: "high",
+                    wsbSentiment: "bullish",
+                    wsbTrending: true,
+                    wsbNote: "Strong retail support post-earnings beat",
                     risks: [
                         "$115-135B capex in 2026 (nearly doubled from 2025)",
                         "Reality Labs losing $24B/year; margin compression to 41%",
@@ -496,6 +550,9 @@
                     priceTarget: "$285-305",
                     currentPrice: "$238",
                     upside: "20-28%",
+                    wsbMentions: "medium",
+                    wsbSentiment: "bullish",
+                    wsbTrending: false,
                     risks: [
                         "AWS losing share to Azure (29% vs Azure catching up)",
                         "$125B+ capex with uncertain AI ROI",
@@ -513,6 +570,9 @@
                     priceTarget: "$575-629",
                     currentPrice: "$426",
                     upside: "35-48%",
+                    wsbMentions: "medium",
+                    wsbSentiment: "mixed",
+                    wsbTrending: false,
                     risks: [
                         "Azure decelerating (40% to 37-38%)",
                         "OpenAI concentration (45% of $625B backlog)",
@@ -531,6 +591,10 @@
                     priceTarget: "$551-580",
                     currentPrice: "$420",
                     upside: "31-38%",
+                    wsbMentions: "low",
+                    wsbSentiment: "mixed",
+                    wsbTrending: false,
+                    wsbNote: "Still recovering sentiment post-outage incident",
                     risks: [
                         "Valuation still premium at 25-28x sales",
                         "Growth decelerating from 31% to 20-22%",
@@ -548,6 +612,9 @@
                     priceTarget: "$226-250",
                     currentPrice: "$175",
                     upside: "29-43%",
+                    wsbMentions: "low",
+                    wsbSentiment: "none",
+                    wsbTrending: false,
                     risks: [
                         "$25B CyberArk deal adds $15B debt",
                         "13.5% shareholder dilution from deal",
@@ -565,6 +632,9 @@
                     priceTarget: "$317-325",
                     currentPrice: "$201",
                     upside: "58-62%",
+                    wsbMentions: "low",
+                    wsbSentiment: "none",
+                    wsbTrending: false,
                     risks: [
                         "Premium valuation (75-91x forward P/E)",
                         "Competition from CRWD and PANW platformization",
@@ -582,6 +652,9 @@
                     priceTarget: "$185-225",
                     currentPrice: "$129",
                     upside: "43-74%",
+                    wsbMentions: "low",
+                    wsbSentiment: "bullish",
+                    wsbTrending: false,
                     risks: [
                         "OpenAI customer concentration ($170M ARR at risk)",
                         "Premium valuation (13x P/S, 56x forward P/E)",
@@ -600,6 +673,10 @@
                     priceTarget: "$235-293",
                     currentPrice: "$156",
                     upside: "51-88%",
+                    wsbMentions: "medium",
+                    wsbSentiment: "bullish",
+                    wsbTrending: true,
+                    wsbNote: "Nuclear/data center energy play gaining traction",
                     risks: [
                         "FERC regulatory risk on behind-the-meter deals",
                         "Stock down 29% from 52-week high",
@@ -617,6 +694,9 @@
                     priceTarget: "$455-576",
                     currentPrice: "$331",
                     upside: "37-74%",
+                    wsbMentions: "low",
+                    wsbSentiment: "bullish",
+                    wsbTrending: false,
                     risks: [
                         "High valuation (75x+ trailing P/E)",
                         "Susquehanna outage narrowed 2025 guidance",
@@ -634,6 +714,9 @@
                     priceTarget: "$190-230",
                     currentPrice: "$189",
                     upside: "1-22%",
+                    wsbMentions: "low",
+                    wsbSentiment: "bullish",
+                    wsbTrending: false,
                     risks: [
                         "Trading at all-time highs (limited near-term upside)",
                         "Valuation stretched at 65x trailing P/E",
@@ -652,6 +735,10 @@
                     priceTarget: "$346-400",
                     currentPrice: "$437",
                     upside: "-9% to -21%",
+                    wsbMentions: "medium",
+                    wsbSentiment: "bullish",
+                    wsbTrending: false,
+                    wsbNote: "WSB bullish but retail often late to memory cycles",
                     risks: [
                         "Trading 18-26% ABOVE analyst targets",
                         "Up 224% in 12 months - priced for perfection",
@@ -669,6 +756,10 @@
                     priceTarget: "$110-121",
                     currentPrice: "$126",
                     upside: "-4% to -13%",
+                    wsbMentions: "medium",
+                    wsbSentiment: "bullish",
+                    wsbTrending: false,
+                    wsbNote: "Uranium/nuclear hype; sentiment diverges from valuation",
                     risks: [
                         "Trading ABOVE most analyst targets",
                         "P/E of 117-138x vs peer average 71x",
@@ -686,6 +777,9 @@
                     priceTarget: "$333-417",
                     currentPrice: "$440",
                     upside: "-6% to -24%",
+                    wsbMentions: "low",
+                    wsbSentiment: "none",
+                    wsbTrending: false,
                     risks: [
                         "Up 600% from 52-week low; trading above targets",
                         "Capacity fully committed - limited upside surprise",
@@ -703,6 +797,10 @@
                     priceTarget: "$297-312",
                     currentPrice: "$160",
                     upside: "85% but high risk",
+                    wsbMentions: "low",
+                    wsbSentiment: "mixed",
+                    wsbTrending: false,
+                    wsbNote: "Stargate deal hype but balance sheet concerns",
                     risks: [
                         "433-500% debt/equity ratio",
                         "OpenAI $300B deal creates binary outcome",
@@ -823,6 +921,7 @@
                                         <th>Target</th>
                                         <th>Upside</th>
                                         <th>Conv</th>
+                                        <th>WSB</th>
                                         <th>Rationale</th>
                                     </tr>
                                 </thead>
@@ -839,6 +938,11 @@
                                             <td class="target-cell">${stock.priceTarget}</td>
                                             <td class="${stock.upside.includes('-') ? 'upside-negative' : 'upside-positive'}">${stock.upside}</td>
                                             <td class="conviction-cell">${stock.conviction}/10</td>
+                                            <td class="wsb-cell">
+                                                ${stock.wsbSentiment ? `<span class="wsb-sentiment wsb-${stock.wsbSentiment}">${stock.wsbSentiment}</span>` : '<span class="wsb-sentiment wsb-none">none</span>'}
+                                                ${stock.wsbTrending ? '<span class="wsb-trending" title="Trending on WSB">🔥</span>' : ''}
+                                                ${stock.wsbMentions && stock.wsbMentions !== 'none' ? `<div class="wsb-mentions">${stock.wsbMentions} mentions</div>` : ''}
+                                            </td>
                                             <td class="justification-cell">${stock.justification}</td>
                                         </tr>
                                     `).join('')}

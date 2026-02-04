@@ -2,7 +2,7 @@
 # Claude Alpha Daily Update Script
 # Runs fully autonomous stock research with sub-agents
 
-cd /Users/allan/Code/stocks
+cd /home/napta2k/stocks
 
 PROMPT='You are updating Claude Alpha, an AI stock recommendations dashboard.
 
@@ -21,6 +21,16 @@ Use web search to identify:
 - Any major news affecting current holdings
 - Analyst rating changes
 
+### Phase 1.5: WallStreetBets Sentiment Scan
+Search for r/wallstreetbets discussions to identify:
+- Most mentioned tickers on WSB in the past week
+- Sentiment analysis (bullish/bearish/mixed) for each trending ticker
+- Unusual options activity being discussed (YOLO plays, large call/put positions)
+- Any emerging "meme stock" momentum or retail-driven rallies
+- Stocks with divergent sentiment (WSB bullish vs analysts bearish, or vice versa)
+
+Use searches like "site:reddit.com/r/wallstreetbets [ticker]" or "wallstreetbets most mentioned stocks this week"
+
 ### Phase 2: Deep Research (Use Sub-Agents)
 For EACH ticker (existing and new candidates), spawn a separate sub-agent to research:
 - Current price and 52-week range
@@ -28,6 +38,11 @@ For EACH ticker (existing and new candidates), spawn a separate sub-agent to res
 - Recent earnings and guidance
 - Key catalysts and risks
 - Valuation metrics (P/E, P/S, PEG)
+- WallStreetBets sentiment: search for recent WSB discussions on the ticker
+  - Estimate mention frequency (low/medium/high)
+  - Determine sentiment (bullish/bearish/mixed/none)
+  - Note any YOLO plays, DD posts, or unusual options activity
+  - Flag if retail sentiment diverges from institutional view
 
 Run these sub-agents IN PARALLEL for efficiency.
 
@@ -52,6 +67,11 @@ Based on research, construct a portfolio:
    - metadata.lastUpdated (ISO timestamp)
    - summary stats
    - All recommendations with current data
+   - For each recommendation, include WSB metrics:
+     - "wsbMentions": "none" | "low" | "medium" | "high"
+     - "wsbSentiment": "none" | "bearish" | "mixed" | "bullish"
+     - "wsbTrending": true/false (if actively discussed this week)
+     - "wsbNote": optional string for notable DD posts or YOLO plays
 
 2. **index.html** - Update the embedded currentData object (search for "const currentData = {") with the same data
 
@@ -70,6 +90,12 @@ git push
 - Keep justifications concise but specific (mention key metrics)
 - Risks should be real concerns, not generic warnings
 - Current date for research: use today'"'"'s date
+- WSB Analysis Guidelines:
+  - Treat high WSB mention frequency as a volatility indicator, not a buy signal
+  - Flag when retail sentiment strongly diverges from institutional consensus
+  - Consider WSB momentum for short-term trading opportunities only
+  - Add "YOLO play" or similar notes for stocks with extreme retail activity
+  - Be skeptical of coordinated pump attempts; cross-validate with fundamentals
 
 Begin your research now. Use sub-agents extensively for parallel deep dives.'
 
